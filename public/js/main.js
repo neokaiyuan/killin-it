@@ -1,8 +1,13 @@
 (function() {
 
+    var cur_video_blob = null;
+    var userid = null;
+    var fb_instance_stream = null;
+
     $(document).ready(function(){
         setupPdf();
         connect_to_firebase();
+        connect_webcam();
     });
 
     function connect_to_firebase(){
@@ -21,11 +26,59 @@
         // set up variables to access firebase data structure
         var fb_new_session = fb_instance.child('session').child(fb_session_id);
         var fb_instance_users = fb_new_session.child('users');
-
+        fb_instance_stream = fb_new_session.child('stream');
 
         // create user id for new user
-        var username =Math.floor(Math.random()*1111);
-        fb_instance_users.push({name: username});
+        userid =Math.floor(Math.random()*1111);
+        fb_instance_users.push({name: userid});
+    }
+
+    function connect_webcam() {
+        var mediaConstraints = {
+            video: true,
+            audio: true
+        };
+        
+        var onMediaSuccess = function(stream) {
+            var video_width = 250; 
+            var video_height = video_width * 0.7; 
+            var webcam_stream = document.getElementById('webcam_stream'); 
+            var video = document.createElement('video');
+            webcam_stream.innerHTML = "";
+            // adds these properties to the video
+            video = mergeProps(video, {
+                controls: false,
+                width: video_width,
+                height: video_height,
+                src: URL.createObjectURL(stream)
+
+            });
+            video.setAttribute('autoplay', true);
+            webcam_stream.appendChild(video);
+
+            $("#pdfarea").click(function(e) {
+                var mediaRecorder = new MediaStreamRecorder(stream);
+                mediaRecorder.mimeType = 'video/webm';
+                mediaRecorder.ondataavailable = function (blob) {
+                    console.log("new data available!");
+
+                    // convert data into base 64 blocks
+                    blob_to_base64(blob,function(b64_data){
+                        cur_video_blob = b64_data;
+                        fb_instance_stream.push({name: userid, video: cur_video_blob, position: e.clientY});
+                    });
+                };
+                mediaRecorder.start(3000);
+            });   
+        }
+
+        var onMediaError = function(e) {
+            console.error('media error', e);
+        }
+
+        navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError)
+
+
     }
 
     function setupPdf(){
@@ -72,5 +125,28 @@
             renderPage(pageNum);
         });
     }
+var blob_to_base64 = function(blob, callback) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      var dataUrl = reader.result;
+      var base64 = dataUrl.split(',')[1];
+      callback(base64);
+    };
+    reader.readAsDataURL(blob);
+  };
+
+  var base64_to_blob = function(base64) {
+    var binary = atob(base64);
+    var len = binary.length;
+    var buffer = new ArrayBuffer(len);
+    var view = new Uint8Array(buffer);
+    for (var i = 0; i < len; i++) {
+      view[i] = binary.charCodeAt(i);
+    }
+    var blob = new Blob([view]);
+    return blob;
+  };
+
+
 
 })();

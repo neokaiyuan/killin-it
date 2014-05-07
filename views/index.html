@@ -9,20 +9,22 @@
     <script type="text/javascript" src="/js/pdf.js"></script>    
     <script type="text/javascript" src="/js/pdf.worker.js"></script>    
     <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/video.js"></script>
+    <script type="text/javascript" src="/js/MediaStreamRecorder.js"></script>
+
 </head>
 <body>
-
-
     <div id="content-area">
         <div>
             <canvas id="pdfarea"></canvas>
         </div>
         <center>
-        <div>
-            <button id="prev">Previous</button>
-            <button id="next">Next</button>
-            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-        </div>
-    </center>
+            <div>
+                <button id="prev">Previous</button>
+                <button id="next">Next</button>
+                <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+            </div>
+        </center>
+        <div id="webcam_stream"></div>
     </div>
 </body>
