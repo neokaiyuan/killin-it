@@ -59,7 +59,6 @@ a {
 #playback_bar {
   width: 50px;
   height: 585px;
-  color: red;
   display: inline-block;
   float: left;
 }
