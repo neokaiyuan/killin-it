@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
 app.get('/', function(req, res){
-    res.render('index', {title: "ReadWithMe" });
+    res.render('index', {title: "Dú" });
 });
 
 /// catch 404 and forwarding to error handler

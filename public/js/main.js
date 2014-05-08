@@ -146,7 +146,4 @@ var blob_to_base64 = function(blob, callback) {
     var blob = new Blob([view]);
     return blob;
   };
-
-
-
 })();
