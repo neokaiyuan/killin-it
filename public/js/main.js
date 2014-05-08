@@ -76,8 +76,6 @@
 
                 });
             });   
-
-
         }
 
         var onMediaError = function(e) {

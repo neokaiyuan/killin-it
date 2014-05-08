@@ -1,19 +1,49 @@
+html, body{
+  min-height: 100%;
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  position: relative;
 }
 
 a {
   color: #00B7FF;
 }
 
-#content-area{
+#video_overlay {
+  position: absolute;
+  top: 150px;
+  left: 300px;
+  height: 230px;
+  width: 400px;
+  padding: 5px;
+  z-index: 10;
+  background-color: gray;
+  opacity: 0.0;
+  -webkit-transition: opacity 0.0 ease-out; z-index: 0;
+  -webkit-transition-duration: 0.25s; 
+}
+
+#video_overlay #video {
+  float: center;
+}
+
+#video_overlay.show {
+  opacity: 1.0;
+  z-index: 10000;        
+  -webkit-transition-duration: 0.25s; 
+}
+
+#content_area{
     margin: 0 auto;
-    width: 800px;
+    width: 100%;
     display: inline-block;
 }
 
 #pdfdiv {
+  float: left;
 }
 
 #record_bar {
@@ -23,6 +53,17 @@ a {
 	border-style: solid;
 	color: red;
 	display: inline-block;
+  float: left;
+}
+
+#playback_bar {
+  width: 50px;
+  height: 585px;
+  border-width: 5px;
+  border-style: solid;
+  color: red;
+  display: inline-block;
+  float: left;
 }
 
 #webcam_stream {
