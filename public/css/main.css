@@ -51,7 +51,8 @@ a {
 	height: 585px;
 	/* border-width: 1px; */
 	/* border-style: solid; */
-	color: red;
+    background-color: #EEEEEE;
+	/* color: red; */
 	display: inline-block;
   float: left;
 }
