@@ -56,7 +56,7 @@
             video.setAttribute('autoplay', true);
             webcam_stream.appendChild(video);
 
-            $("#pdfarea").click(function(e) {
+            $("#record_bar").mousedown(function(e) {
                 var mediaRecorder = new MediaStreamRecorder(stream);
                 mediaRecorder.mimeType = 'video/webm';
                 mediaRecorder.ondataavailable = function (blob) {
@@ -68,8 +68,16 @@
                         fb_instance_stream.push({name: userid, video: cur_video_blob, position: e.clientY});
                     });
                 };
-                mediaRecorder.start(3000);
+                mediaRecorder.start(30000);
+                $("#webcam_stream").css("visibility","visible");
+                $("#record_bar").mouseup(function(e) {
+                    mediaRecorder.stop();
+                    $("#webcam_stream").css("visibility","hidden");
+
+                });
             });   
+
+
         }
 
         var onMediaError = function(e) {
