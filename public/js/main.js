@@ -22,6 +22,10 @@
         $("#video").get(0).onended = function(e) {
             $("#video_overlay").removeClass("show");
         };
+        $("#record_bar").mousemove(function(e){
+            console.log(e.clientY);
+            $("img").css('top', e.clientY - 30);
+        });
     }
 
     function setup_webcam() {

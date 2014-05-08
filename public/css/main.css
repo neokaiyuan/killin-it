@@ -49,11 +49,15 @@ a {
 #record_bar {
 	width: 50px;
 	height: 585px;
-	border-width: 1px;
-	border-style: solid;
+	/* border-width: 1px; */
+	/* border-style: solid; */
 	color: red;
 	display: inline-block;
   float: left;
+}
+
+#record_bar img{
+    position: absolute;
 }
 
 #playback_bar {
