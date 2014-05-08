@@ -12,34 +12,50 @@
 
     function connect_to_firebase(){
         /* Include your Firebase link here!*/
-        fb_instance = new Firebase("https://killin-it.firebaseio.com/");
+        fb_instance = new Firebase("https://readwithme.firebaseio.com/");
 
-        // generate new reading session id or use existing id
-        var url_segments = document.location.href.split("/#");
-        if(url_segments[1]){
-            fb_session_id = url_segments[1];
-        }else{
-            fb_session_id = Math.random().toString(36).substring(7);
-        }
-        // display_msg({m:"Share this url with your friend to comment on book: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"})
+        fb_session_id = "default";
 
-        // set up variables to access firebase data structure
-        var fb_new_session = fb_instance.child('session').child(fb_session_id);
-        var fb_instance_users = fb_new_session.child('users');
-        fb_instance_stream = fb_new_session.child('stream');
+        fb_session = fb_instance.child('default');
+        fb_page_stream = fb_session.child('1');
 
-        // create user id for new user
-        userid =Math.floor(Math.random()*1111);
-        fb_instance_users.push({name: userid});
+
     }
 
     function connect_webcam() {
-        var mediaConstraints = {
-            video: true,
-            audio: true
-        };
-        
-        var onMediaSuccess = function(stream) {
+        function record_audio_and_video(){
+            recordRTC_Video.startRecording();
+            recordRTC_Audio.startRecording();
+        }
+
+        //This is why I hate JavaScript. Need to learn how to use promises.
+        function stop_recording_and_upload(yPos){
+            var stuff_to_upload = {}
+            stuff_to_upload.y = yPos;
+            recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob){
+                    stuff_to_upload.audioBlob = base64blob;
+                    recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
+                            stuff_to_upload.videoBlob = base64blob;
+                            console.log(stuff_to_upload);
+                            fb_session.child(window.pageNum).push(stuff_to_upload);
+                        });
+                    });        
+                });
+            });
+        }
+
+        // record audio
+        navigator.getUserMedia({audio: true}, function(mediaStream) {
+            window.recordRTC_Audio = RecordRTC(mediaStream);
+        },function(failure){
+            console.log(failure);
+        });
+
+        // record video
+        navigator.getUserMedia({video: true}, function(mediaStream) {
+            window.recordRTC_Video = RecordRTC(mediaStream,{type:"video"});
             var video_width = 250; 
             var video_height = video_width * 0.7; 
             var webcam_stream = document.getElementById('webcam_stream'); 
@@ -48,9 +64,9 @@
             // adds these properties to the video
             video = mergeProps(video, {
                 controls: false,
-                width: video_width,
-                height: video_height,
-                src: URL.createObjectURL(stream)
+                  width: video_width,
+                  height: video_height,
+                  src: URL.createObjectURL(mediaStream)
 
             });
             video.setAttribute('autoplay', true);
@@ -83,15 +99,28 @@
         }
 
         navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError)
+=======
+        },function(failure){
+            console.log(failure);
+        });
+>>>>>>> 9bc7deb40ac365d5a4d07470e76cf4385522e5f5
 
+        $("#record_bar").mousedown(function(e) {
+            $("#webcam_stream").css("visibility","visible");
+            record_audio_and_video();
+        });   
 
+        $("#record_bar").mouseup(function(e) {
+            $("#webcam_stream").css("visibility","hidden");
+            stop_recording_and_upload(e.clientY);
+        });
     }
 
     function setupPdf(){
         var url = "/other/mobydick.pdf";
         PDFJS.disableWorker = true;
+        window.pageNum = 1;
         var pdfDoc = null,
-            pageNum = 1,
             scale = 1.3,
             canvas = document.getElementById('pdfarea'),
             ctx = canvas.getContext('2d');
@@ -131,25 +160,25 @@
             renderPage(pageNum);
         });
     }
-var blob_to_base64 = function(blob, callback) {
-    var reader = new FileReader();
-    reader.onload = function() {
-      var dataUrl = reader.result;
-      var base64 = dataUrl.split(',')[1];
-      callback(base64);
+    var blob_to_base64 = function(blob, callback) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var dataUrl = reader.result;
+            var base64 = dataUrl.split(',')[1];
+            callback(base64);
+        };
+        reader.readAsDataURL(blob);
     };
-    reader.readAsDataURL(blob);
-  };
 
-  var base64_to_blob = function(base64) {
-    var binary = atob(base64);
-    var len = binary.length;
-    var buffer = new ArrayBuffer(len);
-    var view = new Uint8Array(buffer);
-    for (var i = 0; i < len; i++) {
-      view[i] = binary.charCodeAt(i);
-    }
-    var blob = new Blob([view]);
-    return blob;
-  };
+    var base64_to_blob = function(base64) {
+        var binary = atob(base64);
+        var len = binary.length;
+        var buffer = new ArrayBuffer(len);
+        var view = new Uint8Array(buffer);
+        for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+        var blob = new Blob([view]);
+        return blob;
+    };
 })();
