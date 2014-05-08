@@ -49,7 +49,7 @@ a {
 #record_bar {
 	width: 50px;
 	height: 585px;
-	border-width: 5px;
+	border-width: 1px;
 	border-style: solid;
 	color: red;
 	display: inline-block;
@@ -68,7 +68,7 @@ a {
   top: 10px;
   right: 10px;
   padding: 0;
-  visibility: visible;
+  visibility: hidden;
 }
 
 
