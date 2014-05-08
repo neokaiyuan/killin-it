@@ -5,30 +5,25 @@
     var fb_instance_stream = null;
 
     $(document).ready(function(){
-        setupPdf();
-        connect_to_firebase();
-        connect_webcam();
+        setup_pdf();
+        setup_firebase();
+        setup_webcam();
     });
 
-    function connect_to_firebase(){
+    function setup_firebase(){
         /* Include your Firebase link here!*/
         fb_instance = new Firebase("https://readwithme.firebaseio.com/");
-
         fb_session_id = "default";
-
         fb_session = fb_instance.child('default');
-        fb_page_stream = fb_session.child('1');
-
-
     }
 
-    function connect_webcam() {
+    function setup_webcam() {
         function record_audio_and_video(){
             recordRTC_Video.startRecording();
             recordRTC_Audio.startRecording();
         }
 
-        //This is why I hate JavaScript. Need to learn how to use promises.
+        //This is why I hate JavaScript. Need to learn to use promises.
         function stop_recording_and_upload(yPos){
             var stuff_to_upload = {}
             stuff_to_upload.y = yPos;
@@ -39,21 +34,22 @@
                         blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
                             stuff_to_upload.videoBlob = base64blob;
                             console.log(stuff_to_upload);
-                            fb_session.child(window.pageNum).push(stuff_to_upload);
+                            fb_session.child('' + window.pageNum).push(stuff_to_upload);
+                            console.log(window.pageNum + ':' + stuff_to_upload);                                
                         });
                     });        
                 });
             });
         }
 
-        // record audio
+        // setup audio recording
         navigator.getUserMedia({audio: true}, function(mediaStream) {
             window.recordRTC_Audio = RecordRTC(mediaStream);
         },function(failure){
             console.log(failure);
         });
 
-        // record video
+        // setup video recording 
         navigator.getUserMedia({video: true}, function(mediaStream) {
             window.recordRTC_Video = RecordRTC(mediaStream,{type:"video"});
             var video_width = 250; 
@@ -87,7 +83,7 @@
         });
     }
 
-    function setupPdf(){
+    function setup_pdf(){
         var url = "/other/mobydick.pdf";
         PDFJS.disableWorker = true;
         window.pageNum = 1;
