@@ -35,7 +35,6 @@
                             stuff_to_upload.videoBlob = base64blob;
                             console.log(stuff_to_upload);
                             fb_session.child('' + window.pageNum).push(stuff_to_upload);
-                            console.log(window.pageNum + ':' + stuff_to_upload);                                
                         });
                     });        
                 });
@@ -68,38 +67,9 @@
             video.setAttribute('autoplay', true);
             webcam_stream.appendChild(video);
 
-            $("#record_bar").mousedown(function(e) {
-                var mediaRecorder = new MediaStreamRecorder(stream);
-                mediaRecorder.mimeType = 'video/webm';
-                mediaRecorder.ondataavailable = function (blob) {
-                    console.log("new data available!");
-
-                    // convert data into base 64 blocks
-                    blob_to_base64(blob,function(b64_data){
-                        cur_video_blob = b64_data;
-                        fb_instance_stream.push({name: userid, video: cur_video_blob, position: e.clientY});
-                    });
-                };
-                mediaRecorder.start(30000);
-                $("#webcam_stream").css("visibility","visible");
-                $("#record_bar").mouseup(function(e) {
-                    mediaRecorder.stop();
-                    $("#webcam_stream").css("visibility","hidden");
-
-                });
-            });   
-        }
-
-        var onMediaError = function(e) {
-            console.error('media error', e);
-        }
-
-        navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError)
-=======
         },function(failure){
             console.log(failure);
         });
->>>>>>> 9bc7deb40ac365d5a4d07470e76cf4385522e5f5
 
         $("#record_bar").mousedown(function(e) {
             $("#webcam_stream").css("visibility","visible");
