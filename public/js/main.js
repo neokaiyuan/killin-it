@@ -6,6 +6,7 @@
 
     $(document).ready(function(){
         setup_firebase();
+        setup_playback();
         setup_pdf();
         setup_webcam();
     });
@@ -15,6 +16,12 @@
         fb_instance = new Firebase("https://readwithme.firebaseio.com/");
         fb_session_id = "default";
         fb_session = fb_instance.child('default');
+    }
+
+    function setup_playback() {
+        $("#video").get(0).onended = function(e) {
+            $("#video_overlay").removeClass("show");
+        };
     }
 
     function setup_webcam() {
