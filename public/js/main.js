@@ -98,9 +98,15 @@
                     source.type =  "video/webm";
                     $("#video").empty();
                     $("#video").append(source);
-
                     $("#video_overlay").addClass("show");
                     $("#video").get(0).play(); 
+    
+                    var source = document.createElement("source");
+                    source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                    source.type =  "audio/ogg";
+                    $("#audio").empty();
+                    $("#audio").append(source);
+                    $("#audio").get(0).play(); 
                 });
                 $("#playback_bar").append(elem);
                 })(key);
