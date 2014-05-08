@@ -13,7 +13,7 @@
 
     function setup_firebase(){
         /* Include your Firebase link here!*/
-        fb_instance = new Firebase("https://readwithme.firebaseio.com/");
+        fb_instance = new Firebase("https://zi.firebaseio.com/");
         fb_session_id = "default";
         fb_session = fb_instance.child('default');
     }
@@ -94,9 +94,10 @@
     }
     
     function reload_videos_on_page(pNum){
+            $("#playback_bar").empty();
         fb_session.child(''+pageNum).on('value', function(snapshot){
             video_msgs = snapshot.val();
-            $("#playback_bar").empty();
+            console.log(video_msgs);
             for(key in video_msgs){
                 //Closures FTW!
                 (function(key){
