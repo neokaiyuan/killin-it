@@ -3,6 +3,8 @@
 <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/css/style.css'>
+    <link rel='stylesheet' href='/css/main.css'>
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.firebase.com/js/client/1.0.6/firebase.js"></script>
     <!-- Use latest PDF.js build from Github -->
@@ -14,8 +16,9 @@
 
 </head>
 <body>
+    <div id ="record_bar"></div>
     <div id="content-area">
-        <div>
+        <div id="pdfdiv">
             <canvas id="pdfarea"></canvas>
         </div>
         <center>
