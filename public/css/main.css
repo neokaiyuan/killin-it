@@ -59,8 +59,6 @@ a {
 #playback_bar {
   width: 50px;
   height: 585px;
-  border-width: 5px;
-  border-style: solid;
   color: red;
   display: inline-block;
   float: left;
@@ -77,4 +75,12 @@ a {
 
 #webcam_stream video {
   border: 2px solid #dcc;
+}
+
+.videoHead{
+    position: absolute;
+}
+
+.msg-icon {
+    width: 30%;
 }

@@ -5,8 +5,8 @@
     var fb_instance_stream = null;
 
     $(document).ready(function(){
-        setup_pdf();
         setup_firebase();
+        setup_pdf();
         setup_webcam();
     });
 
@@ -81,6 +81,32 @@
             stop_recording_and_upload(e.clientY);
         });
     }
+    
+    function reload_videos_on_page(pNum){
+        fb_session.child(''+pageNum).on('value', function(snapshot){
+            video_msgs = snapshot.val();
+            $("#playback_bar").empty();
+            for(key in video_msgs){
+                //Closures FTW!
+                (function(key){
+                console.log(video_msgs[key]);
+                var vid = video_msgs[key];
+                var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
+                elem.click(function(){
+                    var source = document.createElement("source");
+                    source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
+                    source.type =  "video/webm";
+                    $("#video").empty();
+                    $("#video").append(source);
+
+                    $("#video_overlay").addClass("show");
+                    $("#video").get(0).play(); 
+                });
+                $("#playback_bar").append(elem);
+                })(key);
+            }
+        });
+    }
 
     function setup_pdf(){
         var url = "/other/mobydick.pdf";
@@ -113,18 +139,21 @@
                 return;
             pageNum--;
             renderPage(pageNum);
+            reload_videos_on_page(pageNum);
         }
 
         function goNext() {
             if(pageNum >= pdfDoc.numPages)
                 return;
-            pageNum++;
+            pageNum++;            
             renderPage(pageNum);            
+            reload_videos_on_page(pageNum);
         }
         PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc){
             pdfDoc = _pdfDoc
             renderPage(pageNum);
         });
+        reload_videos_on_page(pageNum);
     }
     var blob_to_base64 = function(blob, callback) {
         var reader = new FileReader();

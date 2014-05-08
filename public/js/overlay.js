@@ -3,10 +3,6 @@ $(document).ready(function() {
 })
 
 function setup_playback() {
-  $("#playback_bar").click(function() {
-    $("#video_overlay").addClass("show");
-    $("#video").get(0).play(); 
-  });
   addEndedListener();
 }
 
