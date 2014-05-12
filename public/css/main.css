@@ -48,7 +48,7 @@ a {
 
 #record_bar {
 	width: 50px;
-	height: 585px;
+	height: 1000px;
     background-color: #EEEEEE;
 	display: inline-block;
   float: left;
@@ -60,7 +60,7 @@ a {
 
 #playback_bar {
   width: 50px;
-  height: 585px;
+  height: 1000px;
   display: inline-block;
   float: left;
 }

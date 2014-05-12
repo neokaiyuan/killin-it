@@ -13,7 +13,7 @@
 
     function setup_firebase(){
         /* Include your Firebase link here!*/
-        fb_instance = new Firebase("https://zi.firebaseio.com/");
+        fb_instance = new Firebase("https://readwithme.firebaseio.com/");
         fb_session_id = "default";
         fb_session = fb_instance.child('default');
     }
@@ -23,8 +23,8 @@
             $("#video_overlay").removeClass("show");
         };
         $("#record_bar").mousemove(function(e){
-            console.log(e.clientY);
-            $("img").css('top', e.clientY - 30);
+            console.log(e.pageY);
+            $("img").css('top', e.pageY - 30);
         });
     }
 
@@ -84,12 +84,13 @@
 
         $("#record_bar").mousedown(function(e) {
             $("#webcam_stream").css("visibility","visible");
+            $("#webcam_stream").css({"top": window.scrollY});
             record_audio_and_video();
         });   
 
         $("#record_bar").mouseup(function(e) {
             $("#webcam_stream").css("visibility","hidden");
-            stop_recording_and_upload(e.clientY);
+            stop_recording_and_upload(e.pageY);
         });
     }
     
@@ -110,7 +111,11 @@
                     source.type =  "video/webm";
                     $("#video").empty();
                     $("#video").append(source);
+                    var offset = 250+window.scrollY;
+                    console.log(offset);
+                    $("#video_overlay").css({"top": offset});
                     $("#video_overlay").addClass("show");
+                    console.log(window.scrollY);
                     $("#video").get(0).play(); 
     
                     var source = document.createElement("source");
@@ -119,6 +124,10 @@
                     $("#audio").empty();
                     $("#audio").append(source);
                     $("#audio").get(0).play(); 
+                    
+                    $(window).scroll(function(e){
+                        
+                    });
                 });
                 $("#playback_bar").append(elem);
                 })(key);
@@ -127,7 +136,7 @@
     }
 
     function setup_pdf(){
-        var url = "/other/mobydick.pdf";
+        var url = "/other/sle.pdf";
         PDFJS.disableWorker = true;
         window.pageNum = 1;
         var pdfDoc = null,
