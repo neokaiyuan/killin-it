@@ -5,8 +5,9 @@
     var fb_instance_stream = null;
 
     $(document).ready(function(){
-        setup_pdf();
         setup_firebase();
+        setup_playback();
+        setup_pdf();
         setup_webcam();
     });
 
@@ -15,6 +16,16 @@
         fb_instance = new Firebase("https://readwithme.firebaseio.com/");
         fb_session_id = "default";
         fb_session = fb_instance.child('default');
+    }
+
+    function setup_playback() {
+        $("#video").get(0).onended = function(e) {
+            $("#video_overlay").removeClass("show");
+        };
+        $("#record_bar").mousemove(function(e){
+            console.log(e.pageY);
+            $("img").css('top', e.pageY - 30);
+        });
     }
 
     function setup_webcam() {
@@ -73,17 +84,59 @@
 
         $("#record_bar").mousedown(function(e) {
             $("#webcam_stream").css("visibility","visible");
+            $("#webcam_stream").css({"top": window.scrollY});
             record_audio_and_video();
         });   
 
         $("#record_bar").mouseup(function(e) {
             $("#webcam_stream").css("visibility","hidden");
-            stop_recording_and_upload(e.clientY);
+            stop_recording_and_upload(e.pageY);
+        });
+    }
+    
+    function reload_videos_on_page(pNum){
+            $("#playback_bar").empty();
+        fb_session.child(''+pageNum).on('value', function(snapshot){
+            video_msgs = snapshot.val();
+            console.log(video_msgs);
+            for(key in video_msgs){
+                //Closures FTW!
+                (function(key){
+                console.log(video_msgs[key]);
+                var vid = video_msgs[key];
+                var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
+                elem.click(function(){
+                    var source = document.createElement("source");
+                    source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
+                    source.type =  "video/webm";
+                    $("#video").empty();
+                    $("#video").append(source);
+                    var offset = 250+window.scrollY;
+                    console.log(offset);
+                    $("#video_overlay").css({"top": offset});
+                    $("#video_overlay").addClass("show");
+                    console.log(window.scrollY);
+                    $("#video").get(0).play(); 
+    
+                    var source = document.createElement("source");
+                    source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                    source.type =  "audio/ogg";
+                    $("#audio").empty();
+                    $("#audio").append(source);
+                    $("#audio").get(0).play(); 
+                    
+                    $(window).scroll(function(e){
+                        
+                    });
+                });
+                $("#playback_bar").append(elem);
+                })(key);
+            }
         });
     }
 
     function setup_pdf(){
-        var url = "/other/mobydick.pdf";
+        var url = "/other/sle.pdf";
         PDFJS.disableWorker = true;
         window.pageNum = 1;
         var pdfDoc = null,
@@ -113,18 +166,21 @@
                 return;
             pageNum--;
             renderPage(pageNum);
+            reload_videos_on_page(pageNum);
         }
 
         function goNext() {
             if(pageNum >= pdfDoc.numPages)
                 return;
-            pageNum++;
+            pageNum++;            
             renderPage(pageNum);            
+            reload_videos_on_page(pageNum);
         }
         PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc){
             pdfDoc = _pdfDoc
             renderPage(pageNum);
         });
+        reload_videos_on_page(pageNum);
     }
     var blob_to_base64 = function(blob, callback) {
         var reader = new FileReader();

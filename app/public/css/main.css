@@ -48,20 +48,19 @@ a {
 
 #record_bar {
 	width: 50px;
-	height: 585px;
-	border-width: 5px;
-	border-style: solid;
-	color: red;
+	height: 1000px;
+    background-color: #EEEEEE;
 	display: inline-block;
   float: left;
 }
 
+#record_bar img{
+    position: absolute;
+}
+
 #playback_bar {
   width: 50px;
-  height: 585px;
-  border-width: 5px;
-  border-style: solid;
-  color: green;
+  height: 1000px;
   display: inline-block;
   float: left;
 }
@@ -71,10 +70,18 @@ a {
   top: 10px;
   right: 10px;
   padding: 0;
-  visibility: visible;
+  visibility: hidden;
 }
 
 
 #webcam_stream video {
   border: 2px solid #dcc;
+}
+
+.videoHead{
+    position: absolute;
+}
+
+.msg-icon {
+    width: 30%;
 }
