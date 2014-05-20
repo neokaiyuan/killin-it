@@ -13,7 +13,7 @@
 
     function setup_firebase(){
         /* Include your Firebase link here!*/
-        fb_instance = new Firebase("https://readwithme.firebaseio.com/");
+        fb_instance = new Firebase("https://killinit.firebaseio.com/");
         fb_session_id = "default";
         fb_session = fb_instance.child('default');
     }
@@ -23,7 +23,6 @@
             $("#video_overlay").removeClass("show");
         };
         $("#record_bar").mousemove(function(e){
-            console.log(e.pageY);
             $("img").css('top', e.pageY - 30);
         });
     }
@@ -75,8 +74,9 @@
                   src: URL.createObjectURL(mediaStream)
 
             });
-            video.setAttribute('autoplay', true);
             webcam_stream.appendChild(video);
+            video.setAttribute('autoplay', true);
+
 
         },function(failure){
             console.log(failure);
@@ -112,7 +112,6 @@
                     $("#video").empty();
                     $("#video").append(source);
                     var offset = 250+window.scrollY;
-                    console.log(offset);
                     $("#video_overlay").css({"top": offset});
                     $("#video_overlay").addClass("show");
                     console.log(window.scrollY);
@@ -125,9 +124,24 @@
                     $("#audio").append(source);
                     $("#audio").get(0).play(); 
                     
-                    $(window).scroll(function(e){
+                    $("#pdfdiv").click(function(e) {
+                        console.log("Video stopped");
+                        $("#video").get(0).pause(); 
+                        $("#audio").get(0).pause(); 
+                        $("#video_overlay").removeClass("show");
+                     });
+
+                    $("#video_overlay").click(function(e) {
+                        console.log("Video paused");
+                        $("#video").get(0).pause(); 
+                        $("#audio").get(0).pause(); 
+                        $("#video_overlay").click(function(e) {
+                            console.log("Video restarted");
+                            $("#video").get(0).play(); 
+                            $("#audio").get(0).play(); 
                         
-                    });
+                        });
+                     });
                 });
                 $("#playback_bar").append(elem);
                 })(key);
@@ -167,6 +181,8 @@
             pageNum--;
             renderPage(pageNum);
             reload_videos_on_page(pageNum);
+            window.scrollTo(0,0);
+
         }
 
         function goNext() {
@@ -175,6 +191,7 @@
             pageNum++;            
             renderPage(pageNum);            
             reload_videos_on_page(pageNum);
+            window.scrollTo(0,0)
         }
         PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc){
             pdfDoc = _pdfDoc
