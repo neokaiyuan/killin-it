@@ -1,6 +1,20 @@
 (function() {
     //Facebook auth
     
+    function loginCallback(response){
+        if (response.status === 'connected') {
+            // Logged into your app and Facebook.
+            FB.api('/me', function(response){
+                window.me = response; 
+            });
+            $(".dialogIsOpen").toggleClass("dialogIsOpen");
+        } else if (response.status === 'not_authorized') {
+            // The person is logged into Facebook, but not your app.
+        } else {
+            // The person is not logged into Facebook, so we're not sure if
+            // they are logged into this app or not.
+        }
+    }
     window.fbAsyncInit = function() {
         FB.init({
             appId      : '529110353867623',
@@ -9,7 +23,11 @@
         xfbml      : true,  // parse social plugins on this page
         version    : 'v2.0' // use version 2.0
         });
+        FB.getLoginStatus(function(response) {
+            loginCallback(response);
+        });
     };
+
 
     (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
@@ -27,21 +45,10 @@
             'Thanks for logging in, ' + response.name + '!';
         });
     }
-    
+
     $("#modal").click(function(){
         FB.login(function(response){
-            if (response.status === 'connected') {
-                // Logged into your app and Facebook.
-                FB.api('/me', function(response){
-                    window.me = response; 
-                });
-                $(".dialogIsOpen").toggleClass("dialogIsOpen");
-            } else if (response.status === 'not_authorized') {
-                // The person is logged into Facebook, but not your app.
-            } else {
-                // The person is not logged into Facebook, so we're not sure if
-                // they are logged into this app or not.
-            }
+            loginCallback(response);
         }, {scope: 'public_profile,email,user_friends'});
     });
 
