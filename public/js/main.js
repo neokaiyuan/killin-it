@@ -94,6 +94,7 @@
         function stop_recording_and_upload(yPos){
             var stuff_to_upload = {}
             stuff_to_upload.y = yPos;
+            stuff_to_upload.userid = me.id;
             recordRTC_Audio.stopRecording(function(audioURL) {
                 blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob){
                     stuff_to_upload.audioBlob = base64blob;
@@ -184,57 +185,64 @@
             for(key in video_msgs){
                 //Closures FTW!
                 (function(key){
-                console.log(video_msgs[key]);
-                var vid = video_msgs[key];
-                var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
-                
-                // for (response in vid[responses]) {
+                    console.log(video_msgs[key]);
+                    var vid = video_msgs[key];
+                    console.log('/'+ vid.userid + '/picture');
+                    FB.api('/'+ vid.userid + '/picture', function(response){
+                        console.log(response);
+                        var elem = $('<div><img class="msg-icon" src="' + response.data.url + '"></img></div>')
+                        .attr('id', key)
+                        .addClass('videoHead')
+                        .css({"top": vid.y, "position": "absolute" });
+
+                    // for (response in vid[responses]) {
 
 
-                // }
+                    // }
 
-                // add threads here
-                //fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
+                    // add threads here
+                    //fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
 
-                elem.click(function(){
-                    var source = document.createElement("source");
-                    source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
-                    source.type =  "video/webm";
-                    $("#video").empty();
-                    $("#video").append(source);
-                    var offset = 250+window.scrollY;
-                    $("#video_overlay").css({"top": offset});
-                    $("#video_overlay").addClass("show");
-                    console.log(window.scrollY);
-                    $("#video").get(0).play(); 
-    
-                    var source = document.createElement("source");
-                    source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
-                    source.type =  "audio/ogg";
-                    $("#audio").empty();
-                    $("#audio").append(source);
-                    $("#audio").get(0).play(); 
-                    
-                    $("#pdfdiv").click(function(e) {
-                        console.log("Video stopped");
-                        $("#video").get(0).pause(); 
-                        $("#audio").get(0).pause(); 
-                        $("#video_overlay").removeClass("show");
-                     });
+                    elem.click(function(){
+                        var source = document.createElement("source");
+                        source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
+                        source.type =  "video/webm";
+                        $("#video").empty();
+                        $("#video").append(source);
+                        var offset = 250+window.scrollY;
+                        $("#video_overlay").css({"top": offset});
+                        $("#video_overlay").addClass("show");
+                        console.log(window.scrollY);
+                        $("#video").get(0).play(); 
 
-                    $("#video_overlay").click(function(e) {
-                        console.log("Video paused");
-                        $("#video").get(0).pause(); 
-                        $("#audio").get(0).pause(); 
-                        $("#video_overlay").click(function(e) {
-                            console.log("Video restarted");
-                            $("#video").get(0).play(); 
-                            $("#audio").get(0).play(); 
-                        
+                        var source = document.createElement("source");
+                        source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                        source.type =  "audio/ogg";
+                        $("#audio").empty();
+                        $("#audio").append(source);
+                        $("#audio").get(0).play(); 
+
+                        $("#pdfdiv").click(function(e) {
+                            console.log("Video stopped");
+                            $("#video").get(0).pause(); 
+                            $("#audio").get(0).pause(); 
+                            $("#video_overlay").removeClass("show");
                         });
-                     });
-                });
-                $("#playback_bar").append(elem);
+
+                        $("#video_overlay").click(function(e) {
+                            console.log("Video paused");
+                            $("#video").get(0).pause(); 
+                            $("#audio").get(0).pause(); 
+                            $("#video_overlay").click(function(e) {
+                                console.log("Video restarted");
+                                $("#video").get(0).play(); 
+                                $("#audio").get(0).play(); 
+
+                            });
+                        });
+                    });
+                    $("#playback_bar").append(elem);
+                    });
                 })(key);
             }
         });

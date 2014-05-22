@@ -92,7 +92,7 @@ a {
 }
 
 .msg-icon {
-    width: 30%;
+    border-radius: 80px;
 }
 
 .textHead{
