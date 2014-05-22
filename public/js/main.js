@@ -104,7 +104,7 @@
     }                
 
     function setup_webcam() {
-        function record_audio_and_video(){
+        record_audio_and_video = function(){
             recordRTC_Video.startRecording();
             recordRTC_Audio.startRecording();
         }
@@ -125,6 +125,24 @@
                     });        
                 });
             });
+        }
+
+        stop_recording_and_upload_response = function(key, yPos){
+            var stuff_to_upload = {}
+            stuff_to_upload.y = yPos;
+            stuff_to_upload.userid = me.id;
+            recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob){
+                    stuff_to_upload.audioBlob = base64blob;
+                    recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
+                            stuff_to_upload.videoBlob = base64blob;
+                            fb_session.child('' + window.pageNum).child("video").child(key).child("responses").push(stuff_to_upload);
+                        });
+                    });        
+                });
+            });
+            reload_videos_on_page(pageNum);
         }
 
         // setup audio recording
@@ -214,6 +232,7 @@
             }
         });
         fb_session.child(''+pageNum).child("video").on('value', function(snapshot){
+        $("#playback_bar").empty();
             video_msgs = {};
 
             var video_dump = snapshot.val();
@@ -263,8 +282,21 @@
                         console.log(key2);
                         appendToRootUlDiv(key2,key);
                     }
-                    
-                    $("#root_" + key).append($('<img src="/img/record.png"></img>'));
+                    var rec_button = $('<img src="/img/record.png"></img>'); 
+                    rec_button.mousedown(function(e) {
+                        console.log("Started recording response");
+                        $("#webcam_stream").css("visibility","visible");
+                        $("#webcam_stream").css({"top": window.scrollY});
+                        record_audio_and_video();
+                    });   
+
+                    rec_button.mouseup(function(e) {
+                        console.log("Finished recording response");
+                        $("#webcam_stream").css("visibility","hidden");
+                        $("#playback_bar").empty();
+                        stop_recording_and_upload_response(key, e.pageY);
+                    });
+                    $("#root_" + key).append(rec_button);
 
                 })(key);
             }
