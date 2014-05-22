@@ -8,7 +8,17 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   position: relative;
 }
+ul {
+}
+ul li {
+  list-style-type: none;
+  display: block;
+  float: left;
+}
 
+ul:hover li{
+  display: block; 
+}
 a {
   color: #00B7FF;
 }
@@ -88,7 +98,7 @@ a {
 }
 
 .videoHead{
-    position: absolute;
+    /* position: absolute; */
 }
 
 .msg-icon {

@@ -8,7 +8,6 @@
                 window.me = response; 
                 $("#header_username").text(me.name);
                 FB.api('/me/picture', function(response){
-                    console.log(response);
                     $("#header_photo").attr('src', response.data.url);
                 });
             });
@@ -84,6 +83,26 @@
         });
     }
 
+    play_video = function(video_id){
+        var source = document.createElement("source");
+        var vid = video_msgs[video_id];
+        source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
+        source.type =  "video/webm";
+        $("#video").empty();
+        $("#video").append(source);
+        var offset = 250+window.scrollY;
+        $("#video_overlay").css({"top": offset});
+        $("#video_overlay").addClass("show");
+        $("#video").get(0).play(); 
+
+        var source = document.createElement("source");
+        source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
+        source.type =  "audio/ogg";
+        $("#audio").empty();
+        $("#audio").append(source);
+        $("#audio").get(0).play(); 
+    }                
+
     function setup_webcam() {
         function record_audio_and_video(){
             recordRTC_Video.startRecording();
@@ -101,7 +120,6 @@
                     recordRTC_Video.stopRecording(function(videoURL) {
                         blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
                             stuff_to_upload.videoBlob = base64blob;
-                            console.log(stuff_to_upload);
                             fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
                     });        
@@ -159,6 +177,23 @@
             fb_session.child('' + window.pageNum).child("text").push(text_upload);
         });
 
+        $("#pdfdiv").click(function(e) {
+            console.log("Video stopped");
+            $("#video").get(0).pause(); 
+            $("#audio").get(0).pause(); 
+            $("#video_overlay").removeClass("show");
+        });
+
+        $("#video_overlay").click(function(e) {
+            console.log("Video paused");
+            $("#video").get(0).pause(); 
+            $("#audio").get(0).pause(); 
+            $("#video_overlay").click(function(e) {
+                console.log("Video restarted");
+                $("#video").get(0).play(); 
+                $("#audio").get(0).play(); 
+            });
+        });
     }
 
     
@@ -168,7 +203,6 @@
             text_msgs = snapshot.val();
             for(key in text_msgs){
                 (function(key) {
-                    console.log(text_msgs[key]);
                     var text_obj = text_msgs[key];
                     var elem = $('<div></div>').attr('id', key).addClass('textHead').css({"top": text_obj.y, "position": "absolute"});
                     var text_dom_elem = document.createTextNode(text_obj.text);
@@ -180,69 +214,58 @@
             }
         });
         fb_session.child(''+pageNum).child("video").on('value', function(snapshot){
-            video_msgs = snapshot.val();
-            console.log(video_msgs);
-            for(key in video_msgs){
+            video_msgs = {};
+
+            var video_dump = snapshot.val();
+            for(key in video_dump){
+                video_msgs[key] = video_dump[key];
+                for(res in video_dump[key].responses){
+                    video_msgs[res] = video_dump[key].responses[res];
+                }
+            }
+            
+            function appendToRootUlDiv(key, root_key){
+                var vid = video_msgs[key];
+                console.log(vid);
+                if(!vid.userid){
+                    vid.userid = "10202137132692979";
+                }
+                FB.api('/'+ vid.userid + '/picture', function(response){
+                    if(!response.error){
+                        $("#root_"+ root_key).append($('<li><div><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                            .attr('id', key)
+                            .addClass('videoHead')
+                            .click(function(){
+                                play_video(key);
+                            }));
+                    } else {
+                        $("#root_"+ root_key).append($('<li><div><img class="msg-icon" src="/img/letter-closed.png"></img></div></li>')
+                            .attr('id', key)
+                            .addClass('videoHead')
+                            .css({"top": vid.y, "position": "absolute" })
+                            .click(function(){
+                                play_video(key);
+                            }));
+                    }
+                });
+            }
+            for(key in video_dump){
                 //Closures FTW!
                 (function(key){
-                    console.log(video_msgs[key]);
-                    var vid = video_msgs[key];
-                    console.log('/'+ vid.userid + '/picture');
-                    FB.api('/'+ vid.userid + '/picture', function(response){
-                        console.log(response);
-                        var elem = $('<div><img class="msg-icon" src="' + response.data.url + '"></img></div>')
-                        .attr('id', key)
-                        .addClass('videoHead')
-                        .css({"top": vid.y, "position": "absolute" });
-
-                    // for (response in vid[responses]) {
-
-
-                    // }
-
-                    // add threads here
-                    //fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
-
-                    elem.click(function(){
-                        var source = document.createElement("source");
-                        source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
-                        source.type =  "video/webm";
-                        $("#video").empty();
-                        $("#video").append(source);
-                        var offset = 250+window.scrollY;
-                        $("#video_overlay").css({"top": offset});
-                        $("#video_overlay").addClass("show");
-                        console.log(window.scrollY);
-                        $("#video").get(0).play(); 
-
-                        var source = document.createElement("source");
-                        source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
-                        source.type =  "audio/ogg";
-                        $("#audio").empty();
-                        $("#audio").append(source);
-                        $("#audio").get(0).play(); 
-
-                        $("#pdfdiv").click(function(e) {
-                            console.log("Video stopped");
-                            $("#video").get(0).pause(); 
-                            $("#audio").get(0).pause(); 
-                            $("#video_overlay").removeClass("show");
-                        });
-
-                        $("#video_overlay").click(function(e) {
-                            console.log("Video paused");
-                            $("#video").get(0).pause(); 
-                            $("#audio").get(0).pause(); 
-                            $("#video_overlay").click(function(e) {
-                                console.log("Video restarted");
-                                $("#video").get(0).play(); 
-                                $("#audio").get(0).play(); 
-
-                            });
-                        });
-                    });
+                    var elem = $('<div/>').append(
+                        $('<ul id = root_' + key + '> </ul>'))
+                            .css({"top": video_dump[key].y, "position": "absolute" });
                     $("#playback_bar").append(elem);
-                    });
+                    appendToRootUlDiv(key, key)
+                    var resp = video_dump[key].responses; 
+                    console.log(resp);
+                    for(key2 in resp){
+                        console.log(key2);
+                        appendToRootUlDiv(key2,key);
+                    }
+                    
+                    $("#root_" + key).append($('<img src="/img/record.png"></img>'));
+
                 })(key);
             }
         });
