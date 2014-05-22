@@ -224,7 +224,7 @@
                     });   
                     recordButton.mouseup(function(e) {
                         $("#webcam_stream").css("visibility","hidden");
-                        stop_recording_and_upload(e.pageY);
+                        stop_recording_and_upload();
                     });
 
                     $("#playback_bar").append(thread);
@@ -235,7 +235,7 @@
                     }
 
                     //This is why I hate JavaScript. Need to learn to use promises.
-                    function stop_recording_and_upload(yPos){
+                    function stop_recording_and_upload(){
                         var stuff_to_upload = {}
                         recordRTC_Audio.stopRecording(function(audioURL) {
                             blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob){
