@@ -7,8 +7,8 @@
     $(document).ready(function(){
         setup_firebase();
         setup_playback();
-        setup_pdf();
         setup_webcam();
+        setup_pdf();
     });
 
     function setup_firebase(){
@@ -100,10 +100,9 @@
             text_upload.text = prompt("Please enter text annotation"); 
             fb_session.child('' + window.pageNum).child("text").push(text_upload);
         });
-
     }
 
-    
+
     function reload_videos_on_page(pNum){
         $("#playback_bar").empty();
         fb_session.child(''+pageNum).child("text").on('value', function(snapshot){
@@ -124,60 +123,133 @@
         fb_session.child(''+pageNum).child("video").on('value', function(snapshot){
             video_msgs = snapshot.val();
             console.log(video_msgs);
-            for(key in video_msgs){
+            for (key in video_msgs) {
                 //Closures FTW!
                 (function(key){
-                console.log(video_msgs[key]);
-                var vid = video_msgs[key];
-                var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
-                
-                // for (response in vid[responses]) {
+                    console.log(video_msgs[key]);
+                    var vid = video_msgs[key];
+                    var thread = $('<div><ul><img class="msg-icon" src="/img/letter-closed.png"></ul></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute"});
+                    console.log(thread.find("img"));
+                    thread.find("img").click(function() {
+                        var source = document.createElement("source");
+                        source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
+                        source.type =  "video/webm";
+                        $("#video").empty();
+                        $("#video").append(source);
+                        var offset = 250+window.scrollY;
+                        $("#video_overlay").css({"top": offset});
+                        $("#video_overlay").addClass("show");
+                        $("#video").get(0).play(); 
 
-
-                // }
-
-                // add threads here
-                //fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
-
-                elem.click(function(){
-                    var source = document.createElement("source");
-                    source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
-                    source.type =  "video/webm";
-                    $("#video").empty();
-                    $("#video").append(source);
-                    var offset = 250+window.scrollY;
-                    $("#video_overlay").css({"top": offset});
-                    $("#video_overlay").addClass("show");
-                    console.log(window.scrollY);
-                    $("#video").get(0).play(); 
-    
-                    var source = document.createElement("source");
-                    source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
-                    source.type =  "audio/ogg";
-                    $("#audio").empty();
-                    $("#audio").append(source);
-                    $("#audio").get(0).play(); 
-                    
-                    $("#pdfdiv").click(function(e) {
-                        console.log("Video stopped");
-                        $("#video").get(0).pause(); 
-                        $("#audio").get(0).pause(); 
-                        $("#video_overlay").removeClass("show");
-                     });
-
-                    $("#video_overlay").click(function(e) {
-                        console.log("Video paused");
-                        $("#video").get(0).pause(); 
-                        $("#audio").get(0).pause(); 
-                        $("#video_overlay").click(function(e) {
-                            console.log("Video restarted");
-                            $("#video").get(0).play(); 
-                            $("#audio").get(0).play(); 
+                        var source = document.createElement("source");
+                        source.src =  URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                        source.type =  "audio/ogg";
+                        $("#audio").empty();
+                        $("#audio").append(source);
+                        $("#audio").get(0).play(); 
                         
+                        $("#pdfdiv").click(function(e) {
+                            console.log("Video stopped");
+                            $("#video").get(0).pause(); 
+                            $("#audio").get(0).pause(); 
+                            $("#video_overlay").removeClass("show");
+                         });
+
+                        $("#video_overlay").click(function(e) {
+                            console.log("Video paused");
+                            $("#video").get(0).pause(); 
+                            $("#audio").get(0).pause(); 
+                            $("#video_overlay").click(function(e) {
+                                console.log("Video restarted");
+                                $("#video").get(0).play(); 
+                                $("#audio").get(0).play(); 
+                            
+                            });
+                         });
+                    });
+
+                    for (responseKey in vid.responses) {
+                        (function(key2){
+                            var threadElem = $('<li><img class="msg-icon" src="/img/letter-closed.png"></li>');
+                            console.log(vid.responses);
+                            console.log(key2);
+                            threadElem.click(function() {
+                                var source = document.createElement("source");
+                                source.src =  URL.createObjectURL(base64_to_blob(vid.responses[key2].videoBlob));
+                                console.log(vid.responses[key2]);
+                                source.type =  "video/webm";
+                                $("#video").empty();
+                                $("#video").append(source);
+                                var offset = 250+window.scrollY;
+                                $("#video_overlay").css({"top": offset});
+                                $("#video_overlay").addClass("show");
+                                $("#video").get(0).play(); 
+
+                                var source = document.createElement("source");
+                                source.src =  URL.createObjectURL(base64_to_blob(vid.responses[key2].audioBlob));
+                                source.type =  "audio/ogg";
+                                $("#audio").empty();
+                                $("#audio").append(source);
+                                $("#audio").get(0).play(); 
+                                
+                                $("#pdfdiv").click(function(e) {
+                                    console.log("Video stopped");
+                                    $("#video").get(0).pause(); 
+                                    $("#audio").get(0).pause(); 
+                                    $("#video_overlay").removeClass("show");
+                                 });
+
+                                $("#video_overlay").click(function(e) {
+                                    console.log("Video paused");
+                                    $("#video").get(0).pause(); 
+                                    $("#audio").get(0).pause(); 
+                                    $("#video_overlay").click(function(e) {
+                                        console.log("Video restarted");
+                                        $("#video").get(0).play(); 
+                                        $("#audio").get(0).play(); 
+                                    
+                                    });
+                                 });
+                            });
+                            thread.children()[0].appendChild(threadElem[0]);
+                        })(responseKey);
+                    }
+
+                    var recordButton = $('<li><img class="msg-icon" src="/img/record.png"></li>');
+                    thread.children()[0].appendChild(recordButton[0]);
+                    recordButton.mousedown(function(e) {
+                        $("#webcam_stream").css("visibility","visible");
+                        $("#webcam_stream").css({"top": window.scrollY});
+                        record_audio_and_video();
+                    });   
+                    recordButton.mouseup(function(e) {
+                        $("#webcam_stream").css("visibility","hidden");
+                        stop_recording_and_upload(e.pageY);
+                    });
+
+                    $("#playback_bar").append(thread);
+
+                    function record_audio_and_video(){
+                        recordRTC_Video.startRecording();
+                        recordRTC_Audio.startRecording();
+                    }
+
+                    //This is why I hate JavaScript. Need to learn to use promises.
+                    function stop_recording_and_upload(yPos){
+                        var stuff_to_upload = {}
+                        recordRTC_Audio.stopRecording(function(audioURL) {
+                            blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob){
+                                stuff_to_upload.audioBlob = base64blob;
+                                recordRTC_Video.stopRecording(function(videoURL) {
+                                    blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
+                                        stuff_to_upload.videoBlob = base64blob;
+                                        console.log(stuff_to_upload);
+                                        fb_session.child('' + window.pageNum).child("video").child(key).child("responses").push(stuff_to_upload);
+                                    });
+                                });        
+                            });
                         });
-                     });
-                });
-                $("#playback_bar").append(elem);
+                    }
                 })(key);
             }
         });
@@ -233,6 +305,7 @@
         });
         reload_videos_on_page(pageNum);
     }
+
     var blob_to_base64 = function(blob, callback) {
         var reader = new FileReader();
         reader.onload = function() {

@@ -12,6 +12,37 @@ a {
   color: #00B7FF;
 }
 
+ul {
+  display: block;
+}
+
+ul li {
+  list-style-type: none;
+  display: none;
+}
+
+ul:hover li{
+  display: block; 
+}
+
+.videoHead{
+  position: relative;
+  width: 50px;
+}
+
+.msg-icon {
+    width: 50px;
+}
+
+.textHead{
+    width: 200px;
+    font-color: "black";
+    margin-left: 60px;
+    padding: 2px 2px 2px 2px;
+    border: 2px solid #dcc;
+    background-color: #ffffcc;
+}
+
 #video_overlay {
   position: absolute;
   top: 150px;
@@ -55,14 +86,14 @@ a {
   float: left;
 }
 
-#record_bar img{
-    position: absolute;
+#record_bar img {
+  position: absolute;
 }
 
 #playback_bar {
   width: 50px;
   height: 1000px;
-  display: inline-block;
+  /*display: inline-block;*/
   float: right;
 }
 
@@ -81,24 +112,6 @@ a {
   visibility: hidden;
 }
 
-
 #webcam_stream video {
   border: 2px solid #dcc;
-}
-
-.videoHead{
-    position: absolute;
-}
-
-.msg-icon {
-    width: 30%;
-}
-
-.textHead{
-    width: 200px;
-    font-color: "black";
-    margin-left: 60px;
-    padding: 2px 2px 2px 2px;
-    border: 2px solid #dcc;
-    background-color: #ffffcc;
 }
