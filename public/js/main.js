@@ -43,6 +43,7 @@
                     recordRTC_Video.stopRecording(function(videoURL) {
                         blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
                             stuff_to_upload.videoBlob = base64blob;
+                            stuff_to_upload.responses = {};
                             console.log(stuff_to_upload);
                             fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
@@ -130,9 +131,14 @@
                 console.log(video_msgs[key]);
                 var vid = video_msgs[key];
                 var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
+                
+                // for (response in vid[responses]) {
+
+
+                // }
 
                 // add threads here
-
+                //fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
 
                 elem.click(function(){
                     var source = document.createElement("source");
