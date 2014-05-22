@@ -232,7 +232,6 @@
             }
         });
         fb_session.child(''+pageNum).child("video").on('value', function(snapshot){
-        $("#playback_bar").empty();
             video_msgs = {};
 
             var video_dump = snapshot.val();
@@ -293,7 +292,6 @@
                     rec_button.mouseup(function(e) {
                         console.log("Finished recording response");
                         $("#webcam_stream").css("visibility","hidden");
-                        $("#playback_bar").empty();
                         stop_recording_and_upload_response(key, e.pageY);
                     });
                     $("#root_" + key).append(rec_button);
