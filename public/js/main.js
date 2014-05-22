@@ -44,7 +44,7 @@
                         blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
                             stuff_to_upload.videoBlob = base64blob;
                             console.log(stuff_to_upload);
-                            fb_session.child('' + window.pageNum).push(stuff_to_upload);
+                            fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
                     });        
                 });
@@ -92,11 +92,36 @@
             $("#webcam_stream").css("visibility","hidden");
             stop_recording_and_upload(e.pageY);
         });
+
+        $("#pdfdiv").dblclick(function(e){
+        //$("#record_bar").css({"cursor": "auto"});
+            var text_upload = {};
+            text_upload.y = e.pageY; 
+            text_upload.text = prompt("Please enter text annotation"); 
+            fb_session.child('' + window.pageNum).child("text").push(text_upload);
+        });
+
     }
+
     
     function reload_videos_on_page(pNum){
-            $("#playback_bar").empty();
-        fb_session.child(''+pageNum).on('value', function(snapshot){
+        $("#playback_bar").empty();
+        fb_session.child(''+pageNum).child("text").on('value', function(snapshot){
+            text_msgs = snapshot.val();
+            for(key in text_msgs){
+                (function(key) {
+                    console.log(text_msgs[key]);
+                    var text_obj = text_msgs[key];
+                    var elem = $('<div></div>').attr('id', key).addClass('textHead').css({"top": text_obj.y, "position": "absolute"});
+                    var text_dom_elem = document.createTextNode(text_obj.text);
+                    elem.append(text_dom_elem);
+               
+                    $("#playback_bar").append(elem);
+
+                })(key);
+            }
+        });
+        fb_session.child(''+pageNum).child("video").on('value', function(snapshot){
             video_msgs = snapshot.val();
             console.log(video_msgs);
             for(key in video_msgs){

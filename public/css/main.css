@@ -50,9 +50,9 @@ a {
 	width: 50px;
   left: 100px;
 	height: 1000px;
-    background-color: #EEEEEE;
+  background-color: #EEEEEE;
 	display: inline-block;
-  float: right;
+  float: left;
 }
 
 #record_bar img{
@@ -63,7 +63,14 @@ a {
   width: 50px;
   height: 1000px;
   display: inline-block;
-  float: left;
+  float: right;
+}
+
+#text_bar {
+  width: 50px;
+  height: 1000px;
+  display: inline-block;
+  float: right;
 }
 
 #webcam_stream {
@@ -85,4 +92,13 @@ a {
 
 .msg-icon {
     width: 30%;
+}
+
+.textHead{
+    height: 20px;
+    font-color: "black";
+    margin-left: 60px;
+    padding: 2px 2px 2px 2px;
+    border: 2px solid #dcc;
+    background-color: #ffffcc;
 }
