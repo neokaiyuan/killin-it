@@ -184,7 +184,7 @@
     }
 
     function setup_pdf(){
-        var url = "/other/sle.pdf";
+        var url = "/other/sontag.pdf";
         PDFJS.disableWorker = true;
         window.pageNum = 1;
         var pdfDoc = null,
