@@ -6,6 +6,11 @@
             // Logged into your app and Facebook.
             FB.api('/me', function(response){
                 window.me = response; 
+                $("#header_username").text(me.name);
+                FB.api('/me/picture', function(response){
+                    console.log(response);
+                    $("#header_photo").attr('src', response.data.url);
+                });
             });
             $(".dialogIsOpen").toggleClass("dialogIsOpen");
         } else if (response.status === 'not_authorized') {

@@ -3,7 +3,8 @@ html, body{
 }
 
 body {
-  padding: 50px;
+    padding: 0px;
+    margin: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   position: relative;
 }
@@ -136,4 +137,48 @@ a {
 
   /* Clickable */
   pointer-events: auto;
+}
+
+header {
+  height: 33px;
+  display: block;
+  color: #fff;
+  background-color: black;
+  line-height: 33px;
+  padding: 5px 0px 5px 10px;
+  position: relative;
+}
+
+header h1 {
+	margin: 0px;
+  font-size: 22px;
+  float: left;
+  padding: 0px 5px;
+}
+
+header img {
+    width: 32px;
+    float:left;
+}
+
+nav {
+  line-height: 28px;
+  float: right;
+  display: inline;
+}
+
+nav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+nav ul li {
+  float: left;
+  padding: 0 10px;
+  padding-left: 11px;
+  position: relative;
+}
+
+nav ul li img {
+    border-radius:10px;
 }
