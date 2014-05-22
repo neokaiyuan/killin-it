@@ -43,7 +43,6 @@
                     recordRTC_Video.stopRecording(function(videoURL) {
                         blob_to_base64(recordRTC_Video.getBlob(), function(base64blob){
                             stuff_to_upload.videoBlob = base64blob;
-                            stuff_to_upload.responses = {};
                             console.log(stuff_to_upload);
                             fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
