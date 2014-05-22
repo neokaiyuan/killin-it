@@ -229,7 +229,7 @@
     }
 
     function setup_pdf(){
-        var url = "/other/sontag.pdf";
+        var url = "http://s3-us-west-2.amazonaws.com/readwithme/" + global.book_id + ".pdf";
         PDFJS.disableWorker = true;
         window.pageNum = 1;
         var pdfDoc = null,

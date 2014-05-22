@@ -19,7 +19,12 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
 app.get('/', function(req, res){
-    res.render('index', {title: "ReadWithMe" });
+    // res.render('index', {title: "ReadWithMe" ,book_id: null });
+    res.redirect('/book/746829');
+});
+
+app.get('/book/:id', function(req,res){
+    res.render('index', {title: "ReadWithMe", book_id:req.params.id});
 });
 
 /// catch 404 and forwarding to error handler

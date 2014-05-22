@@ -2,9 +2,11 @@
 
 <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/css/style.css'>
     <link rel='stylesheet' href='/css/main.css'>
-
+    <script>
+        window.global = {};
+        global.book_id = <%= book_id %>;
+    </script>
 
 </head>
 <body class="dialogIsOpen">
@@ -18,7 +20,7 @@
             </audio>
         </div>
         <div id="content_area">
-            <div id="record_bar"><img src="img/record.png"></img></div>
+            <div id="record_bar"><img src="/img/record.png"></img></div>
             <div id="pdfdiv">
                 <canvas id="pdfarea"></canvas>
                 <center>
