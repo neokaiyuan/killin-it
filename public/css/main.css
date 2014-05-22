@@ -17,13 +17,13 @@ a {
   top: 150px;
   right: 20px;
   height: 230px;
-  width: 400px;
+  width: 320px;
   padding: 5px;
   z-index: 10;
   background-color: gray;
   opacity: 0.0;
   -webkit-transition: opacity 0.0 ease-out; z-index: 0;
-  -webkit-transition-duration: 0.25s; 
+  -webkit-transition-duration: 0.25s;
 }
 
 #video_overlay #video {
@@ -32,7 +32,7 @@ a {
 
 #video_overlay.show {
   opacity: 1.0;
-  z-index: 10000;        
+  z-index: 10000;
   -webkit-transition-duration: 0.25s; 
 }
 

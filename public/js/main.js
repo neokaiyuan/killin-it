@@ -105,6 +105,10 @@
                 console.log(video_msgs[key]);
                 var vid = video_msgs[key];
                 var elem = $('<div><img class="msg-icon" src="/img/letter-closed.png"></img></div>').attr('id', key).addClass('videoHead').css({"top": vid.y, "position": "absolute" });
+
+                // add threads here
+
+
                 elem.click(function(){
                     var source = document.createElement("source");
                     source.src =  URL.createObjectURL(base64_to_blob(vid.videoBlob));
