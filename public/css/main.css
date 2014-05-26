@@ -8,8 +8,10 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   position: relative;
 }
+
 ul {
 }
+
 ul li {
   list-style-type: none;
   display: block;
@@ -19,6 +21,7 @@ ul li {
 ul:hover li{
   display: block; 
 }
+
 a {
   color: #00B7FF;
 }
@@ -81,6 +84,19 @@ a {
 
 .msg-icon {
     border-radius: 80px;
+}
+
+.delete_button {
+  height: 25px;
+  width: 25px;
+  position: relative;
+  top: -30px;
+  right: 20px;
+  opacity: 0.0;
+}
+
+.msg-icon-div:hover .delete_button {
+  opacity: 1.0;  
 }
 
 .textHead{

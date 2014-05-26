@@ -20,21 +20,37 @@ $(function() {
             var msg = this.pageThreads[threadID].messages[msgID];
             FB.api('/'+msg.userID+'/picture', function(response){
                     if (!response.error) {
-                        var elem = $('<li><div><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                        var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
                             .attr('id', msgID)
                             .addClass('videoHead');
+
+                        var delete_button = $('<img class="msg-icon delete_button" src="/img/delete_button.png"></img>')
+                        delete_button.click(function() {
+                            if (confirm("Are you should you want to remove this message?")) {
+
+                                /* TODO: 
+                                need to find the fb instance and remove it 
+                                //this.fb_main.child(this.bookID).child(this.pageNum).child(threadID).child(msgID).remove()
+                                restructure to distinguish between head and msg elements. perhaps just have all be elements and no head?
+                                */
+
+                                msg.remove();
+                            }
+                        });
+                        elem.find(".msg-icon-div").append(delete_button);
+
                         //Assign appropriate click handlers/UI
-                        if(msg.type === "video"){
+                        if (msg.type === "video") {
                             rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
                                 console.log(snapshot.val());
                                 rwm.videoMsgs[msg.linkID] = snapshot.val();
                             });
                             elem.click(function(){
                                 play_video(msg.linkID);
-                            })
-                            Tipped.create(elem.get(), {inline: 'video_overlay'});
-                        } else if(msg.type === "text"){
-                            Tipped.create(elem.get(), msg.text);
+                            });
+                            Tipped.create(elem.find(".msg-icon"), {inline: 'video_overlay'});
+                        } else if (msg.type === "text") {
+                            Tipped.create(elem.find(".msg-icon"), msg.text);
                         }
                         
                         $("#"+threadID).append(elem);
@@ -120,7 +136,6 @@ $(function() {
             });
         },
         bindUIActions: function() {
-
             $("#modal").click(function() {
                 FB.login(rwm.ensureLoggedIn, {
                     scope: 'public_profile,email,user_friends'
@@ -149,7 +164,7 @@ $(function() {
 
             });
             Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
-            Tipped.create("#recordVideo", {inline: 'webcam_stream'})
+            Tipped.create('#recordVideo', {inline: 'webcam_stream'})
         },
 
         initFacebook: function() {
@@ -297,6 +312,7 @@ $(function() {
                 })(key);
             }
         });
+
         fb_session.child('' + pageNum).child("video").on('value', function(snapshot) {
             video_msgs = {};
 
