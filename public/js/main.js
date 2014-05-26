@@ -9,10 +9,52 @@ $(function() {
         pageThreads: null,
         recordRTC_Video: null,
         recordRTC_Audio: null,
+        renderMsg: function(threadID, msgID){
+            console.log(threadID);
+            var msg = this.pageThreads[threadID].messages[msgID];
+            FB.api('/'+msg.userID+'/picture', function(response){
+                    if (!response.error) {
+                        var elem = $('<li><div><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                            .attr('id', msgID)
+                            .addClass('videoHead');
+                        //Assign appropriate click handlers/UI
+                        if(msg.type === "video"){
+
+                        } else if(msg.type === "text"){
+
+                        }
+                        
+                        $("#"+threadID).append(elem);
+                    } else {
+                        console.log("Could not get FB pic");
+                    }
+            });
+
+            console.log(msg);
+        },
+        renderAnnotations: function(){
+            for(x in this.pageThreads){
+                var elem = $('<div/>').addClass('thread').append(
+                    $('<ul id = ' + x + '> </ul>'))
+                    .css({
+                        "top": this.pageThreads[x].position.y1,
+                    "position": "absolute"
+                    });
+                $("#playback_bar").append(elem);
+            }
+            for(x in this.pageThreads){
+                var msgs = this.pageThreads[x].messages;
+                for(y in msgs){
+                    this.renderMsg(x, y);
+                }
+            }
+        },
         reloadAnnotations: function(){
             this.fb_main.child(this.bookID).child(pageNum).once('value', function(snapshot){
-                this.pageThreads = snapshot.val();         
-                console.log(this.pageThreads);
+                rwm.pageThreads = snapshot.val();         
+                console.log(rwm.pageThreads);
+                $("#playback_bar").empty();
+                rwm.renderAnnotations();
             }); 
         },
         record_audio_and_video: function() {
@@ -327,7 +369,7 @@ $(function() {
                     rec_button.mouseup(function(e) {
                         console.log("Finished recording response");
                         $("#webcam_stream").css("visibility", "hidden");
-                        rwm.stop_recording_and_upload_response("-JNrc4iYRV6w_JqGIj5F");
+                        rwm.stop_recording_and_upload_response("-JNrca2jtRY1YsIYe_FP");
                     });
                     $("#root_" + key).append(rec_button);
 
@@ -385,7 +427,7 @@ $(function() {
             pdfDoc = _pdfDoc
             renderPage(pageNum);
         });
-        //reload_videos_on_page(pageNum);
+        // reload_videos_on_page(pageNum);
     }
     var blob_to_base64 = function(blob, callback) {
         var reader = new FileReader();
