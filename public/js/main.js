@@ -1,14 +1,20 @@
 $(function() {
     //Facebook auth
     window.rwm = {
-        pageNum: null,
+        pageNum: 1,
         userID: null,
         bookID: null,
         fb_main: null,
         fb_data: null,
         pageThreads: null,
+        videoMsgs: {},
         recordRTC_Video: null,
         recordRTC_Audio: null,
+        getVideo: function(linkID){
+            fb_data.child(linkID).once("value", function(snapshot){
+                this.videoMsgs[linkID] = snapshot.val();
+            });
+        },
         renderMsg: function(threadID, msgID){
             console.log(threadID);
             var msg = this.pageThreads[threadID].messages[msgID];
@@ -19,6 +25,13 @@ $(function() {
                             .addClass('videoHead');
                         //Assign appropriate click handlers/UI
                         if(msg.type === "video"){
+                            rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
+                                console.log(snapshot.val());
+                                rwm.videoMsgs[msg.linkID] = snapshot.val();
+                            });
+                            elem.click(function(){
+                                play_video(msg.linkID);
+                            })
                             Tipped.create(elem.get(), {inline: 'video_overlay'});
                         } else if(msg.type === "text"){
                             Tipped.create(elem.get(), msg.text);
@@ -50,7 +63,7 @@ $(function() {
             }
         },
         reloadAnnotations: function(){
-            this.fb_main.child(this.bookID).child(pageNum).once('value', function(snapshot){
+            this.fb_main.child(this.bookID).child(this.pageNum).once('value', function(snapshot){
                 rwm.pageThreads = snapshot.val();         
                 console.log(rwm.pageThreads);
                 $("#playback_bar").empty();
@@ -113,9 +126,6 @@ $(function() {
                     scope: 'public_profile,email,user_friends'
                 });
             });
-            $("#video").get(0).onended = function(e) {
-                $("#video_overlay").removeClass("show");
-            };
             $("#pdfdiv").dblclick(function(e) {
                 //$("#record_bar").css({"cursor": "auto"});
                 var text_upload = {};
@@ -126,18 +136,18 @@ $(function() {
             
             $("#recordVideo").mousedown(function(e){
                 rwm.record_audio_and_video();
-            })
+            });
 
             $("#recordVideo").mouseup(function(e){
                 var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
                 rwm.stop_recording_and_upload_response(threadID);
-            })
+            });
 
             $("#recordText").click(function(e){
                 var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
                 rwm.get_text_message_and_upload(threadID);
 
-            })
+            });
             Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
             Tipped.create("#recordVideo", {inline: 'webcam_stream'})
         },
@@ -231,9 +241,10 @@ $(function() {
         init: function() {
             this.initFacebook();
             this.initFirebase();
-            this.bindUIActions();
             this.bookID = global.book_id;
             this.initWebcam();
+            this.reloadAnnotations();
+            this.bindUIActions();
         }
     }
 
@@ -246,16 +257,16 @@ $(function() {
 
     play_video = function(video_id) {
         var source = document.createElement("source");
-        var vid = video_msgs[video_id];
+        var vid = rwm.videoMsgs[video_id];
         source.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
         source.type = "video/webm";
         $("#video").empty();
         $("#video").append(source);
-        var offset = 250 + window.scrollY;
-        $("#video_overlay").css({
-            "top": offset
-        });
-        $("#video_overlay").addClass("show");
+        // var offset = 250 + window.scrollY;
+        // $("#video_overlay").css({
+        //     "top": offset
+        // });
+        // $("#video_overlay").addClass("show");
         $("#video").get(0).play();
 
         var source = document.createElement("source");
