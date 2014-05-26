@@ -174,3 +174,10 @@ nav ul li {
 nav ul li img {
     border-radius:10px;
 }
+#toolbar{
+    display: none;
+}
+#toolbar div{
+    float: left;
+    padding: 0px 3px;
+}

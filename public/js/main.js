@@ -71,7 +71,7 @@ $(function() {
                 },
                 messages:{}
             }
-            this.fb_main.child(this.bookID).child(pageNum).push(stuff_to_upload);
+            return this.fb_main.child(this.bookID).child(pageNum).push(stuff_to_upload).name();
         },
         append_msg_to_thread: function(threadID, data){
             this.fb_main.child(this.bookID).child(pageNum).child(threadID).child("messages").push(data);
@@ -123,13 +123,22 @@ $(function() {
                 text_upload.text = prompt("Please enter text annotation");
                 fb_session.child('' + window.pageNum).child("text").push(text_upload);
             });
+            
+            $("#recordVideo").mousedown(function(e){
+                rwm.record_audio_and_video();
+            })
 
-            $("#pdfdiv").click(function(e) {
-                console.log("Video stopped");
-                $("#video").get(0).pause();
-                $("#audio").get(0).pause();
-                $("#video_overlay").removeClass("show");
-            });
+            $("#recordVideo").mouseup(function(e){
+                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+                rwm.stop_recording_and_upload_response(threadID);
+            })
+
+            $("#recordText").click(function(e){
+                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+                rwm.get_text_message_and_upload(threadID);
+
+            })
+            Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}})
         },
         initFacebook: function() {
             window.fbAsyncInit = function() {
