@@ -138,7 +138,8 @@ $(function() {
                 rwm.get_text_message_and_upload(threadID);
 
             })
-            Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}})
+            Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
+            Tipped.create("#recordVideo", {inline: 'webcam_stream'})
         },
         initFacebook: function() {
             window.fbAsyncInit = function() {
@@ -210,17 +211,17 @@ $(function() {
                 var video_height = video_width * 0.7;
                 var webcam_stream = document.getElementById('webcam_stream');
                 var video = document.createElement('video');
-                webcam_stream.innerHTML = "";
+                // webcam_stream.innerHTML = "";
                 // adds these properties to the video
                 video = mergeProps(video, {
-                    controls: true,
+                    controls:false,
+                      autoplay: true,
+                      loop: true,
                       width: video_width,
                       height: video_height,
                       src: URL.createObjectURL(mediaStream)
-
                 });
                 webcam_stream.appendChild(video);
-                video.setAttribute('autoplay', true);
 
 
             }, function(failure) {
