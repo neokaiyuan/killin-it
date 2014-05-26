@@ -126,7 +126,7 @@ $(function() {
                     scope: 'public_profile,email,user_friends'
                 });
             });
-            $("#pdfdiv").dblclick(function(e) {
+            $("#pdfarea").dblclick(function(e) {
                 //$("#record_bar").css({"cursor": "auto"});
                 var text_upload = {};
                 text_upload.y = e.pageY;
@@ -151,6 +151,7 @@ $(function() {
             Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
             Tipped.create("#recordVideo", {inline: 'webcam_stream'})
         },
+
         initFacebook: function() {
             window.fbAsyncInit = function() {
                 FB.init({
@@ -275,31 +276,6 @@ $(function() {
         $("#audio").empty();
         $("#audio").append(source);
         $("#audio").get(0).play();
-    }
-
-    function setup_webcam() {
-
-        //This is why I hate JavaScript. Need to learn to use promises.
-        function stop_recording_and_upload(yPos) {
-            var stuff_to_upload = {}
-            stuff_to_upload.y = yPos;
-            stuff_to_upload.userid = me.id;
-            rwm.recordRTC_Audio.stopRecording(function(audioURL) {
-                blob_to_base64(rwm.recordRTC_Audio.getBlob(), function(base64blob) {
-                    stuff_to_upload.audioBlob = base64blob;
-                    rwm.recordRTC_Video.stopRecording(function(videoURL) {
-                        blob_to_base64(rwm.recordRTC_Video.getBlob(), function(base64blob) {
-                            stuff_to_upload.videoBlob = base64blob;
-                            fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
-                        });
-                    });
-                });
-            });
-        }
-
-
-        // setup audio recording
-
     }
 
     function reload_videos_on_page(pNum) {
@@ -433,7 +409,6 @@ $(function() {
             renderPage(pageNum);
             reload_videos_on_page(pageNum);
             window.scrollTo(0, 0);
-
         }
 
         function goNext() {
@@ -444,12 +419,14 @@ $(function() {
             reload_videos_on_page(pageNum);
             window.scrollTo(0, 0)
         }
+
         PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc) {
             pdfDoc = _pdfDoc
             renderPage(pageNum);
         });
         // reload_videos_on_page(pageNum);
     }
+
     var blob_to_base64 = function(blob, callback) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -471,4 +448,24 @@ $(function() {
         var blob = new Blob([view]);
         return blob;
     };
+
+    function setup_webcam() {
+        function stop_recording_and_upload(yPos) {
+            var stuff_to_upload = {}
+            stuff_to_upload.y = yPos;
+            stuff_to_upload.userid = me.id;
+            rwm.recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(rwm.recordRTC_Audio.getBlob(), function(base64blob) {
+                    stuff_to_upload.audioBlob = base64blob;
+                    rwm.recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(rwm.recordRTC_Video.getBlob(), function(base64blob) {
+                            stuff_to_upload.videoBlob = base64blob;
+                            fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
+                        });
+                    });
+                });
+            });
+        }
+        // setup audio recording
+    }
 });
