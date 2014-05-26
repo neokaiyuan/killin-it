@@ -67,6 +67,7 @@ a {
 }
 
 #webcam_stream {
+    display: none;
   padding: 0;
 }
 
