@@ -1,13 +1,58 @@
 $(function() {
     //Facebook auth
-    var RWD = {
+    window.RWD = {
         pageNum: null,
         userID: null,
         bookID: null,
         recordRTC_Video: null,
         recordRTC_Audio: null,
+
+        record_audio_and_video: function() {
+            this.recordRTC_Video.startRecording();
+            this.recordRTC_Audio.startRecording();
+        },
+
+        stop_recording_and_upload_response:  function(key, yPos) {
+            var stuff_to_upload = {}
+            stuff_to_upload.y = yPos;
+            stuff_to_upload.userid = me.id;
+            RWD.recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(RWD.recordRTC_Audio.getBlob(), function(base64blob) {
+                    stuff_to_upload.audioBlob = base64blob;
+                    RWD.recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(RWD.recordRTC_Video.getBlob(), function(base64blob) {
+                            stuff_to_upload.videoBlob = base64blob;
+                            fb_session.child('' + window.pageNum).child("video").child(key).child("responses").push(stuff_to_upload);
+                        });
+                    });
+                });
+            });
+            reload_videos_on_page(pageNum);
+        },
         bindUIActions: function() {
 
+            $("#modal").click(function() {
+                FB.login(RWD.ensureLoggedIn, {
+                    scope: 'public_profile,email,user_friends'
+                });
+            });
+            $("#video").get(0).onended = function(e) {
+                $("#video_overlay").removeClass("show");
+            };
+            $("#pdfdiv").dblclick(function(e) {
+                //$("#record_bar").css({"cursor": "auto"});
+                var text_upload = {};
+                text_upload.y = e.pageY;
+                text_upload.text = prompt("Please enter text annotation");
+                fb_session.child('' + window.pageNum).child("text").push(text_upload);
+            });
+
+            $("#pdfdiv").click(function(e) {
+                console.log("Video stopped");
+                $("#video").get(0).pause();
+                $("#audio").get(0).pause();
+                $("#video_overlay").removeClass("show");
+            });
         },
         initFacebook: function() {
             window.fbAsyncInit = function() {
@@ -19,7 +64,7 @@ $(function() {
                 version: 'v2.0' // use version 2.0
                 });
                 FB.getLoginStatus(function(response) {
-                    loginCallback(response);
+                    RWD.ensureLoggedIn(response);
                 });
             };
 
@@ -33,62 +78,82 @@ $(function() {
                 fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));
         },
+        ensureLoggedIn: function(response){
+            if (response.status === 'connected') {
+                // Logged into your app and Facebook.
+                FB.api('/me', function(response) {
+                    window.me = response;
+                    $("#header_username").text(me.name);
+                    FB.api('/me/picture', function(response) {
+                        $("#header_photo").attr('src', response.data.url);
+                    });
+                });
+                $(".dialogIsOpen").toggleClass("dialogIsOpen");
+            } else if (response.status === 'not_authorized') {
+                // The person is logged into Facebook, but not your app.
+            } else {
+                // The person is not logged into Facebook, so we're not sure if
+                // they are logged into this app or not.
+            }
+        },
         initFirebase: function(){
-        
+            /* Include your Firebase link here!*/
+            var fb_instance = new Firebase("https://killinit.firebaseio.com/");
+            var fb_session_id = "default";
+            fb_session = fb_instance.child('default');
+        },
+        initWebcam: function(){
+            navigator.getUserMedia({
+                audio: true
+            }, function(mediaStream) {
+                RWD.recordRTC_Audio = RecordRTC(mediaStream);
+            }, function(failure) {
+                console.log(failure);
+            });
+
+            // setup video recording 
+            navigator.getUserMedia({
+                video: true
+            }, function(mediaStream) {
+                RWD.recordRTC_Video = RecordRTC(mediaStream, {
+                    type: "video"
+                });
+                var video_width = 250;
+                var video_height = video_width * 0.7;
+                var webcam_stream = document.getElementById('webcam_stream');
+                var video = document.createElement('video');
+                webcam_stream.innerHTML = "";
+                // adds these properties to the video
+                video = mergeProps(video, {
+                    controls: true,
+                      width: video_width,
+                      height: video_height,
+                      src: URL.createObjectURL(mediaStream)
+
+                });
+                webcam_stream.appendChild(video);
+                video.setAttribute('autoplay', true);
+
+
+            }, function(failure) {
+                console.log(failure);
+            });
         },
         init: function() {
             this.initFacebook();
+            this.initFirebase();
+            this.bindUIActions();
+            this.bookID = global.book_id;
+            this.initWebcam();
         }
     }
 
     RWD.init();
 
-    function loginCallback(response) {
-        if (response.status === 'connected') {
-            // Logged into your app and Facebook.
-            FB.api('/me', function(response) {
-                window.me = response;
-                $("#header_username").text(me.name);
-                FB.api('/me/picture', function(response) {
-                    $("#header_photo").attr('src', response.data.url);
-                });
-            });
-            $(".dialogIsOpen").toggleClass("dialogIsOpen");
-        } else if (response.status === 'not_authorized') {
-            // The person is logged into Facebook, but not your app.
-        } else {
-            // The person is not logged into Facebook, so we're not sure if
-            // they are logged into this app or not.
-        }
-    }
-
-    $("#modal").click(function() {
-        FB.login(function(response) {
-            loginCallback(response);
-        }, {
-            scope: 'public_profile,email,user_friends'
-        });
-    });
-
     $(document).ready(function() {
-        setup_firebase();
-        setup_playback();
         setup_pdf();
         setup_webcam();
     });
-
-    function setup_firebase() {
-        /* Include your Firebase link here!*/
-        fb_instance = new Firebase("https://killinit.firebaseio.com/");
-        fb_session_id = "default";
-        fb_session = fb_instance.child('default');
-    }
-
-    function setup_playback() {
-        $("#video").get(0).onended = function(e) {
-            $("#video_overlay").removeClass("show");
-        };
-    }
 
     play_video = function(video_id) {
         var source = document.createElement("source");
@@ -113,21 +178,17 @@ $(function() {
     }
 
     function setup_webcam() {
-        record_audio_and_video = function() {
-            recordRTC_Video.startRecording();
-            recordRTC_Audio.startRecording();
-        }
 
         //This is why I hate JavaScript. Need to learn to use promises.
         function stop_recording_and_upload(yPos) {
             var stuff_to_upload = {}
             stuff_to_upload.y = yPos;
             stuff_to_upload.userid = me.id;
-            recordRTC_Audio.stopRecording(function(audioURL) {
-                blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob) {
+            RWD.recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(RWD.recordRTC_Audio.getBlob(), function(base64blob) {
                     stuff_to_upload.audioBlob = base64blob;
-                    recordRTC_Video.stopRecording(function(videoURL) {
-                        blob_to_base64(recordRTC_Video.getBlob(), function(base64blob) {
+                    RWD.recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(RWD.recordRTC_Video.getBlob(), function(base64blob) {
                             stuff_to_upload.videoBlob = base64blob;
                             fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
@@ -136,75 +197,9 @@ $(function() {
             });
         }
 
-        stop_recording_and_upload_response = function(key, yPos) {
-            var stuff_to_upload = {}
-            stuff_to_upload.y = yPos;
-            stuff_to_upload.userid = me.id;
-            recordRTC_Audio.stopRecording(function(audioURL) {
-                blob_to_base64(recordRTC_Audio.getBlob(), function(base64blob) {
-                    stuff_to_upload.audioBlob = base64blob;
-                    recordRTC_Video.stopRecording(function(videoURL) {
-                        blob_to_base64(recordRTC_Video.getBlob(), function(base64blob) {
-                            stuff_to_upload.videoBlob = base64blob;
-                            fb_session.child('' + window.pageNum).child("video").child(key).child("responses").push(stuff_to_upload);
-                        });
-                    });
-                });
-            });
-            reload_videos_on_page(pageNum);
-        }
 
         // setup audio recording
-        navigator.getUserMedia({
-            audio: true
-        }, function(mediaStream) {
-            window.recordRTC_Audio = RecordRTC(mediaStream);
-        }, function(failure) {
-            console.log(failure);
-        });
 
-        // setup video recording 
-        navigator.getUserMedia({
-            video: true
-        }, function(mediaStream) {
-            window.recordRTC_Video = RecordRTC(mediaStream, {
-                type: "video"
-            });
-            var video_width = 250;
-            var video_height = video_width * 0.7;
-            var webcam_stream = document.getElementById('webcam_stream');
-            var video = document.createElement('video');
-            webcam_stream.innerHTML = "";
-            // adds these properties to the video
-            video = mergeProps(video, {
-                controls: true,
-                width: video_width,
-                height: video_height,
-                src: URL.createObjectURL(mediaStream)
-
-            });
-            webcam_stream.appendChild(video);
-            video.setAttribute('autoplay', true);
-
-
-        }, function(failure) {
-            console.log(failure);
-        });
-
-        $("#pdfdiv").dblclick(function(e) {
-            //$("#record_bar").css({"cursor": "auto"});
-            var text_upload = {};
-            text_upload.y = e.pageY;
-            text_upload.text = prompt("Please enter text annotation");
-            fb_session.child('' + window.pageNum).child("text").push(text_upload);
-        });
-
-        $("#pdfdiv").click(function(e) {
-            console.log("Video stopped");
-            $("#video").get(0).pause();
-            $("#audio").get(0).pause();
-            $("#video_overlay").removeClass("show");
-        });
     }
 
     function reload_videos_on_page(pNum) {
@@ -289,13 +284,13 @@ $(function() {
                         $("#webcam_stream").css({
                             "top": window.scrollY
                         });
-                        record_audio_and_video();
+                        RWD.record_audio_and_video();
                     });
 
                     rec_button.mouseup(function(e) {
                         console.log("Finished recording response");
                         $("#webcam_stream").css("visibility", "hidden");
-                        stop_recording_and_upload_response(key, e.pageY);
+                        RWD.stop_recording_and_upload_response(key, e.pageY);
                     });
                     $("#root_" + key).append(rec_button);
 
