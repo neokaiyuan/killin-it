@@ -1,6 +1,6 @@
 $(function() {
     //Facebook auth
-    window.RWD = {
+    window.rwm = {
         pageNum: null,
         userID: null,
         bookID: null,
@@ -16,11 +16,11 @@ $(function() {
             var stuff_to_upload = {}
             stuff_to_upload.y = yPos;
             stuff_to_upload.userid = me.id;
-            RWD.recordRTC_Audio.stopRecording(function(audioURL) {
-                blob_to_base64(RWD.recordRTC_Audio.getBlob(), function(base64blob) {
+            rwm.recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(rwm.recordRTC_Audio.getBlob(), function(base64blob) {
                     stuff_to_upload.audioBlob = base64blob;
-                    RWD.recordRTC_Video.stopRecording(function(videoURL) {
-                        blob_to_base64(RWD.recordRTC_Video.getBlob(), function(base64blob) {
+                    rwm.recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(rwm.recordRTC_Video.getBlob(), function(base64blob) {
                             stuff_to_upload.videoBlob = base64blob;
                             fb_session.child('' + window.pageNum).child("video").child(key).child("responses").push(stuff_to_upload);
                         });
@@ -32,7 +32,7 @@ $(function() {
         bindUIActions: function() {
 
             $("#modal").click(function() {
-                FB.login(RWD.ensureLoggedIn, {
+                FB.login(rwm.ensureLoggedIn, {
                     scope: 'public_profile,email,user_friends'
                 });
             });
@@ -64,7 +64,7 @@ $(function() {
                 version: 'v2.0' // use version 2.0
                 });
                 FB.getLoginStatus(function(response) {
-                    RWD.ensureLoggedIn(response);
+                    rwm.ensureLoggedIn(response);
                 });
             };
 
@@ -101,12 +101,14 @@ $(function() {
             var fb_instance = new Firebase("https://killinit.firebaseio.com/");
             var fb_session_id = "default";
             fb_session = fb_instance.child('default');
+            var fb_main = new Firebase("https://rwm-main.firebaseio.com/")
+            var fb_data = new Firebase("https://rwm-data.firebaseio.com/")
         },
         initWebcam: function(){
             navigator.getUserMedia({
                 audio: true
             }, function(mediaStream) {
-                RWD.recordRTC_Audio = RecordRTC(mediaStream);
+                rwm.recordRTC_Audio = RecordRTC(mediaStream);
             }, function(failure) {
                 console.log(failure);
             });
@@ -115,7 +117,7 @@ $(function() {
             navigator.getUserMedia({
                 video: true
             }, function(mediaStream) {
-                RWD.recordRTC_Video = RecordRTC(mediaStream, {
+                rwm.recordRTC_Video = RecordRTC(mediaStream, {
                     type: "video"
                 });
                 var video_width = 250;
@@ -148,7 +150,7 @@ $(function() {
         }
     }
 
-    RWD.init();
+    rwm.init();
 
     $(document).ready(function() {
         setup_pdf();
@@ -184,11 +186,11 @@ $(function() {
             var stuff_to_upload = {}
             stuff_to_upload.y = yPos;
             stuff_to_upload.userid = me.id;
-            RWD.recordRTC_Audio.stopRecording(function(audioURL) {
-                blob_to_base64(RWD.recordRTC_Audio.getBlob(), function(base64blob) {
+            rwm.recordRTC_Audio.stopRecording(function(audioURL) {
+                blob_to_base64(rwm.recordRTC_Audio.getBlob(), function(base64blob) {
                     stuff_to_upload.audioBlob = base64blob;
-                    RWD.recordRTC_Video.stopRecording(function(videoURL) {
-                        blob_to_base64(RWD.recordRTC_Video.getBlob(), function(base64blob) {
+                    rwm.recordRTC_Video.stopRecording(function(videoURL) {
+                        blob_to_base64(rwm.recordRTC_Video.getBlob(), function(base64blob) {
                             stuff_to_upload.videoBlob = base64blob;
                             fb_session.child('' + window.pageNum).child("video").push(stuff_to_upload);
                         });
@@ -284,13 +286,13 @@ $(function() {
                         $("#webcam_stream").css({
                             "top": window.scrollY
                         });
-                        RWD.record_audio_and_video();
+                        rwm.record_audio_and_video();
                     });
 
                     rec_button.mouseup(function(e) {
                         console.log("Finished recording response");
                         $("#webcam_stream").css("visibility", "hidden");
-                        RWD.stop_recording_and_upload_response(key, e.pageY);
+                        rwm.stop_recording_and_upload_response(key, e.pageY);
                     });
                     $("#root_" + key).append(rec_button);
 
