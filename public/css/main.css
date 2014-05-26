@@ -24,17 +24,12 @@ a {
 }
 
 #video_overlay {
-  position: absolute;
-  top: 150px;
-  right: 20px;
   height: 230px;
   width: 320px;
   padding: 5px;
   z-index: 10;
   background-color: gray;
-  opacity: 0.0;
-  -webkit-transition: opacity 0.0 ease-out; z-index: 0;
-  -webkit-transition-duration: 0.25s;
+  display: none;
 }
 
 #video_overlay #video {

@@ -19,9 +19,9 @@ $(function() {
                             .addClass('videoHead');
                         //Assign appropriate click handlers/UI
                         if(msg.type === "video"){
-
+                            Tipped.create(elem.get(), {inline: 'video_overlay'});
                         } else if(msg.type === "text"){
-
+                            Tipped.create(elem.get(), msg.text);
                         }
                         
                         $("#"+threadID).append(elem);
