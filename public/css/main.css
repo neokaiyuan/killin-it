@@ -57,19 +57,6 @@ a {
   float: left;
 }
 
-#record_bar {
-	width: 50px;
-  left: 100px;
-	height: 1000px;
-  background-color: #EEEEEE;
-	display: inline-block;
-  float: left;
-}
-
-#record_bar img{
-    position: absolute;
-}
-
 #playback_bar {
   width: 50px;
   height: 1000px;
@@ -89,7 +76,7 @@ a {
   top: 10px;
   right: 10px;
   padding: 0;
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 
 
