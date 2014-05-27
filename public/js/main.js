@@ -79,7 +79,10 @@ $(function() {
                         Tipped.create(elem.get(),function(){
                             var threadID = x; 
                             console.log(threadID);
-                            var clone = $('#toolbar').clone(true,true);
+                            var clone = $('<div id="toolbar">\
+                                <div id="recordVideo"><img src="/img/video.png" alt="" /></div>\
+                                <div id="recordText"><img src="/img/bubble.png" alt="" /></div>\
+                                <div></div></div>');
                             var vid_btn = clone.children().eq(0);
                             var txt_btn = clone.children().eq(1);
                             console.log(txt_btn);
@@ -214,7 +217,6 @@ $(function() {
 
             var annotation = new Tagger("pdfdiv", "feedback");
 
-         
             $("#recordVideo").mousedown(function(e){
                 rwm.record_audio_and_video();
             });
@@ -232,14 +234,16 @@ $(function() {
                 $("#feedback").height = 0;
                 var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
                 rwm.get_text_message_and_upload(threadID);
-
             });
+
             $("#recordVideo").mouseenter(function(e){
                 $("#webcam_stream").show(); 
             });
+
             $("#recordVideo").mouseleave(function(e){
                 $("#webcam_stream").hide(); 
             });
+
             Tipped.create('#pdfdiv', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
             Tipped.create("#recordVideo", "Click and hold to record video");
             document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);
