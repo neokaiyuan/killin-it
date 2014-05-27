@@ -350,7 +350,7 @@ $(function() {
         initFacebook: function() {
             window.fbAsyncInit = function() {
                 FB.init({
-                    appId: '532144570230868',
+                    appId: '529110353867623',
                 cookie: true, // enable cookies to allow the server to access 
                 // the session
                 xfbml: true, // parse social plugins on this page
