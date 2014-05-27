@@ -6,7 +6,10 @@
     <link rel='stylesheet' href='/css/tipped.css'>
     <script>
         window.global = {};
-        global.book_id = <%= book_id %>;
+        global.book_id = "<%= book_id %>";
+        console.log(global.book_id);
+        console.log("done");
+        // console.log(<%= book_id %>);
     </script>
 
 </head>
