@@ -1,0 +1,28 @@
+html, body{
+    height: 100%;
+}
+body {
+    padding: 0px;
+    margin: 0;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+header{
+    padding: 10px;
+}
+
+#fileselect{
+    position: absolute;
+    top: 0px;
+    display: none;
+}
+
+#status{
+    display: none;
+}
+
+#filedrag{
+    margin: 0px 10px;
+    height: 70%;
+}
+

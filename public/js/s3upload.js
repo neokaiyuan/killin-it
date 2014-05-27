@@ -7,7 +7,7 @@
     S3Upload.prototype.s3_sign_put_url = '/signS3put';
 
     S3Upload.prototype.file_dom_selector = 'file_upload';
-
+    S3Upload.prototype.filelist = null;
     S3Upload.prototype.onFinishS3Put = function(public_url) {
       return console.log('base.onFinishS3Put()', public_url);
     };
@@ -25,9 +25,23 @@
       for (option in options) {
         this[option] = options[option];
       }
-      this.handleFileSelect(document.getElementById(this.file_dom_selector));
+      // this.handleFileSelect(document.getElementById(this.file_dom_selector));
+      console.log(this);
+      this.handleFileList(this["filelist"]);
     }
-
+    
+    S3Upload.prototype.handleFileList = function(files){
+        console.log(files);
+      var f, files, output, _i, _len, _results;
+      this.onProgress(0, 'Upload started.');
+      output = [];
+      _results = [];
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        f = files[_i];
+        _results.push(this.uploadFile(f));
+      }
+      return _results;
+    }
     S3Upload.prototype.handleFileSelect = function(file_element) {
       var f, files, output, _i, _len, _results;
       this.onProgress(0, 'Upload started.');

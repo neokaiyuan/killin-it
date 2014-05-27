@@ -2,14 +2,22 @@
 
 <head>
     <title>ReadWithMe</title>
-    <link rel='stylesheet' href='/css/home.css'>
+    <link rel='stylesheet' href='/css/filedrag.css'>
     <link rel='stylesheet' href='/css/tipped.css'>
+    <link rel='stylesheet' href='/css/home.css'>
 
 </head>
 <body>
-    
-    <input type="file" id="files"/>
+
+    <header>
+    <center>
+        <img src="/img/book.png"></img>
+        <h1>ReadWithMe</h1>
+    </center>    
+    </header>
+    <input type="file" id="fileselect"/>
     <p id="status">Please select a file</p>
+    <div id="filedrag">Drop your PDF here</div>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <!-- Use latest PDF.js build from Github -->
@@ -18,5 +26,6 @@
     <script type="text/javascript" src="/js/dropzone.js"></script>
     <script type="text/javascript" src="/js/lodash.js"></script>
     <script type="text/javascript" src="/js/s3upload.js"></script>
+    <script type="text/javascript" src="/js/filedrag.js"></script>
     <script type="text/javascript" src="/js/home.js"></script>
 </body>
