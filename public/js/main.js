@@ -2,7 +2,7 @@ $(function() {
     //Facebook auth
     window.rwm = {
         pageNum: 1,
-        userID: null,
+        me: null,
         bookID: null,
         fb_main: null,
         fb_data: null,
@@ -107,7 +107,7 @@ $(function() {
             var stuff_to_upload_fbmain = {
                 type: 'text',
                 text: res,
-                userID: me.id
+                userID: rwm.me.id
             }
             this.append_msg_to_thread(threadID, stuff_to_upload_fbmain);
         },
@@ -115,7 +115,7 @@ $(function() {
             var stuff_to_upload_fbdata = {};
             var stuff_to_upload_fbmain = {
                 type: 'video',
-                userID: me.id,
+                userID: rwm.me.id,
             };
             rwm.recordRTC_Audio.stopRecording(function(audioURL) {
                 blob_to_base64(rwm.recordRTC_Audio.getBlob(), function(base64blob) {
@@ -163,8 +163,8 @@ $(function() {
             Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
             Tipped.create("#recordVideo", {inline: 'webcam_stream'})
 
-            document.getElementById('prev').addEventListener('click', rwm.goPrevious);
-            document.getElementById('next').addEventListener('click', rwm.goNext);
+            document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);
+            document.getElementById('nextPage').addEventListener('click', rwm.goNext);
         },
 
         initPdf: function(){
@@ -203,6 +203,8 @@ $(function() {
                 var viewport = page.getViewport(scale);
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                // :( :( :(
+                $("#content_area").height(viewport.height);
 
                 var renderContext = {
                     canvasContext: ctx,
@@ -212,6 +214,7 @@ $(function() {
             });
             document.getElementById('page_num').textContent = rwm.pageNum;
             document.getElementById('page_count').textContent = rwm.pdfDoc.numPages;
+            console.log(canvas.height);
         },
         initFacebook: function() {
             window.fbAsyncInit = function() {
@@ -241,16 +244,19 @@ $(function() {
             if (response.status === 'connected') {
                 // Logged into your app and Facebook.
                 FB.api('/me', function(response) {
-                    window.me = response;
-                    $("#header_username").text(me.name);
+                    rwm.me = response;
+                    $("#header_username").text(rwm.me.name);
                     FB.api('/me/picture', function(response) {
                         $("#header_photo").attr('src', response.data.url);
                     });
                 });
                 $(".dialogIsOpen").toggleClass("dialogIsOpen");
-            } else if (response.status === 'not_authorized') {
-                // The person is logged into Facebook, but not your app.
+            // } else if (response.status === 'not_authorized') {
+            //     // The person is logged into Facebook, but not your app.
             } else {
+                $("body").toggleClass("dialogIsOpen");
+                $("#modal").toggleClass("dialogIsOpen");
+
                 // The person is not logged into Facebook, so we're not sure if
                 // they are logged into this app or not.
             }
