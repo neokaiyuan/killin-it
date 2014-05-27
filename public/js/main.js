@@ -121,7 +121,7 @@ $(function() {
             
         },
         reloadAnnotations: function(){
-            this.fb_main.child(this.bookID).child(this.pageNum).once('value', function(snapshot){
+            this.fb_main.child(this.bookID).child(this.pageNum).on('value', function(snapshot){
                 rwm.pageThreads = snapshot.val();         
                 $("#playback_bar").empty();
                 rwm.reloadHighlight();
