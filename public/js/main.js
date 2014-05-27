@@ -74,7 +74,10 @@ $(function() {
                 for(y in msgs){
                     this.renderMsg(x, y);
                 }
+                var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+                $("#"+x).append(elem);
             }
+            
         },
         reloadAnnotations: function(){
             this.fb_main.child(this.bookID).child(this.pageNum).once('value', function(snapshot){

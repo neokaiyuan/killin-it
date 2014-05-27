@@ -88,7 +88,10 @@ background-color: #DDDDDD;
 .videoHead{
     /* position: absolute; */
 }
-
+img.addreply{
+    width: 20px;
+    padding: 15px 5px;
+}
 .msg-icon {
     border-radius: 80px;
 }
