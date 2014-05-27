@@ -64,7 +64,7 @@ $(function() {
                 var elem = $('<div/>').addClass('thread').append(
                     $('<ul id = ' + x + '> </ul>'))
                     .css({
-                        "top": this.pageThreads[x].position.y1,
+                    "top": this.pageThreads[x].position.y1,
                     "position": "absolute"
                     });
                 $("#playback_bar").append(elem);
@@ -84,19 +84,28 @@ $(function() {
                 rwm.pageThreads = snapshot.val();         
                 $("#playback_bar").empty();
                 rwm.renderAnnotations();
+                rwm.reloadHighlight();
             }); 
+        },
+        reloadHighlight: function(){
+            $(".display").remove();
+            for(thread in this.pageThreads) {
+                var position = this.pageThreads[thread].position;
+                var annot_display = new DisplayTag("pdfdiv", position.x1, position.y1, position.height, position.width);
+
+            }
         },
         record_audio_and_video: function() {
             this.recordRTC_Video.startRecording();
             this.recordRTC_Audio.startRecording();
         },
-        createThread: function(x1,y1,x2,y2){
+        createThread: function(x,y,height,width){
             stuff_to_upload = {
                 position:{
-                    'x1':x1,
-                    'y1':y1,
-                    'x2':x2,
-                    'y2':y2
+                    'x1':x,
+                    'y1':y,
+                    'height':height,
+                    'width':width
                 },
                 messages:{}
             }
@@ -141,25 +150,26 @@ $(function() {
                     scope: 'public_profile,email,user_friends'
                 });
             });
-            $("#pdfarea").dblclick(function(e) {
-                //$("#record_bar").css({"cursor": "auto"});
-                var text_upload = {};
-                text_upload.y = e.pageY;
-                text_upload.text = prompt("Please enter text annotation");
-                fb_session.child('' + rwm.pageNum).child("text").push(text_upload);
-            });
-            
+
+            var annotation = new Tagger("pdfdiv", "feedback");
+
+         
             $("#recordVideo").mousedown(function(e){
                 rwm.record_audio_and_video();
             });
 
             $("#recordVideo").mouseup(function(e){
-                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+                $("#feedback").width = 0;
+                $("#feedback").height = 0;
+                var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
                 rwm.stop_recording_and_upload_response(threadID);
+
             });
 
             $("#recordText").click(function(e){
-                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+                $("#feedback").width = 0;
+                $("#feedback").height = 0;
+                var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
                 rwm.get_text_message_and_upload(threadID);
 
             });
@@ -169,7 +179,7 @@ $(function() {
             $("#recordVideo").mouseleave(function(e){
                 $("#webcam_stream").hide(); 
             });
-            Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
+            Tipped.create('#pdfdiv', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
             Tipped.create("#recordVideo", "Click and hold to record video");
 
             document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);

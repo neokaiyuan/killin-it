@@ -195,3 +195,20 @@ nav ul li img {
     right: 30px;
     top:50px;
 }
+
+#feedback {
+  position: absolute;
+  display: inline-block;
+  border: 1px solid;
+  border-color: black;
+}
+
+.display p {
+  visibility: hidden;
+}
+
+.display:hover p {
+  visibility: visible;
+  color: white;
+  margin: 10px;
+}

@@ -31,7 +31,7 @@ Tagger.prototype.mouseDown = function(event){
 		this.fback.style.height = '0px';
 		this.fback.style.left = this.x_coord + "px";
 		this.fback.style.top = this.y_coord + "px";
-		this.fback.style.border = '2px solid white' ;
+		this.fback.style.border = '2px solid black' ;
 		this.reset = false; 
 	}
 	var obj = this;
