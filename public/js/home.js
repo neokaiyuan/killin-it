@@ -6,7 +6,10 @@ function s3_upload(){
             $('#status').html('Upload progress: ' + percent + '% ' + message);
         },
         onFinishS3Put: function(public_url) {
-            $('#status').html('Upload completed. Uploaded to: '+ public_url);
+            console.log(public_url);
+            var shortid = public_url.split('/');
+            shortid = shortid[shortid.length-1].split('.')[0];
+            window.location.href = "http://read-with-me.herokuapp.com/book/"+ shortid;
         },
         onError: function(status) {
             $('#status').html('Upload error: ' + status);
