@@ -74,6 +74,9 @@ background-color: #DDDDDD;
 }
 
 #webcam_stream {
+    position: absolute;
+    right: 20px;
+    top: 80px;
     display: none;
   padding: 0;
 }

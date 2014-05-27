@@ -160,8 +160,14 @@ $(function() {
                 rwm.get_text_message_and_upload(threadID);
 
             });
+            $("#recordVideo").mouseenter(function(e){
+                $("#webcam_stream").show(); 
+            });
+            $("#recordVideo").mouseleave(function(e){
+                $("#webcam_stream").hide(); 
+            });
             Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
-            Tipped.create("#recordVideo", {inline: 'webcam_stream'})
+            Tipped.create("#recordVideo", "Click and hold to record video");
 
             document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);
             document.getElementById('nextPage').addEventListener('click', rwm.goNext);
