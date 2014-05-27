@@ -141,8 +141,49 @@ $(function() {
             for(x in msgs){
                 this.renderMsg(threadID, x);
             }
-            var elem = $("<img class='addreply' src='/img/plus.png'></img>");
-                $("#"+"thread"+threadID).append(elem);
+                var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+                (function(x){
+                        Tipped.create(elem.get(),function(){
+                            var threadID = x; 
+                            console.log(threadID);
+                            var clone = $('<div id="toolbar">\
+                                <div id="recordVideo"><img src="/img/video.png" alt="" /></div>\
+                                <div id="recordText"><img src="/img/bubble.png" alt="" /></div>\
+                                <div></div></div>');
+                            var vid_btn = clone.children().eq(0);
+                            var txt_btn = clone.children().eq(1);
+                            console.log(txt_btn);
+                            console.log(vid_btn);
+                            vid_btn.mouseup(function(e){
+                                var threadID = x; 
+                                console.log(threadID);
+                                rwm.stop_recording_and_upload_response(threadID);
+                            });
+
+                            txt_btn.click(function(e){
+                                var threadID = x; 
+                                console.log(threadID);
+                                rwm.get_text_message_and_upload(threadID);
+                            });
+    
+                            vid_btn.mousedown(function(e){
+                                rwm.record_audio_and_video();
+                            });
+                            vid_btn.mouseenter(function(e){
+                                $("#webcam_stream").show(); 
+                            });
+                            vid_btn.mouseleave(function(e){
+                                $("#webcam_stream").hide(); 
+                            });
+
+                            Tipped.create(clone.children().first().get(), "Click and hold to record video");
+                            return clone;
+                        });
+                })(threadID);
+
+                $("#thread"+threadID).append(elem);
+            // var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+            //     $("#"+"thread"+threadID).append(elem);
             $("#pdfdiv").click(function(e){
                 $("#playback_bar").empty();
             });
