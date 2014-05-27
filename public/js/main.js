@@ -75,6 +75,42 @@ $(function() {
                     this.renderMsg(x, y);
                 }
                 var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+                (function(x){
+                        Tipped.create(elem.get(),function(){
+                            var threadID = x; 
+                            console.log(threadID);
+                            var clone = $('#toolbar').clone(true,true);
+                            var vid_btn = clone.children().eq(0);
+                            var txt_btn = clone.children().eq(1);
+                            console.log(txt_btn);
+                            console.log(vid_btn);
+                            vid_btn.mouseup(function(e){
+                                var threadID = x; 
+                                console.log(threadID);
+                                rwm.stop_recording_and_upload_response(threadID);
+                            });
+
+                            txt_btn.click(function(e){
+                                var threadID = x; 
+                                console.log(threadID);
+                                rwm.get_text_message_and_upload(threadID);
+                            });
+    
+                            vid_btn.mousedown(function(e){
+                                rwm.record_audio_and_video();
+                            });
+                            vid_btn.mouseenter(function(e){
+                                $("#webcam_stream").show(); 
+                            });
+                            vid_btn.mouseleave(function(e){
+                                $("#webcam_stream").hide(); 
+                            });
+
+                            Tipped.create(clone.children().first().get(), "Click and hold to record video");
+                            return clone;
+                        });
+                })(x);
+
                 $("#"+x).append(elem);
             }
             
@@ -149,28 +185,29 @@ $(function() {
                 fb_session.child('' + rwm.pageNum).child("text").push(text_upload);
             });
             
-            $("#recordVideo").mousedown(function(e){
-                rwm.record_audio_and_video();
-            });
 
-            $("#recordVideo").mouseup(function(e){
-                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
-                rwm.stop_recording_and_upload_response(threadID);
-            });
+            // $("#recordVideo").mousedown(function(e){
+            //     rwm.record_audio_and_video();
+            // });
 
-            $("#recordText").click(function(e){
-                var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
-                rwm.get_text_message_and_upload(threadID);
+            // $("#recordVideo").mouseup(function(e){
+            //     var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+            //     rwm.stop_recording_and_upload_response(threadID);
+            // });
 
-            });
-            $("#recordVideo").mouseenter(function(e){
-                $("#webcam_stream").show(); 
-            });
-            $("#recordVideo").mouseleave(function(e){
-                $("#webcam_stream").hide(); 
-            });
-            Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
-            Tipped.create("#recordVideo", "Click and hold to record video");
+            // $("#recordText").click(function(e){
+            //     var threadID = rwm.createThread(e.pageX, e.pageY, 0,0);
+            //     rwm.get_text_message_and_upload(threadID);
+
+            // });
+            // $("#recordVideo").mouseenter(function(e){
+            //     $("#webcam_stream").show(); 
+            // });
+            // $("#recordVideo").mouseleave(function(e){
+            //     $("#webcam_stream").hide(); 
+            // });
+            // Tipped.create('#pdfarea', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
+            // Tipped.create("#recordVideo", "Click and hold to record video");
 
             document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);
             document.getElementById('nextPage').addEventListener('click', rwm.goNext);
@@ -228,7 +265,7 @@ $(function() {
         initFacebook: function() {
             window.fbAsyncInit = function() {
                 FB.init({
-                    appId: '529110353867623',
+                    appId: '532144570230868',
                 cookie: true, // enable cookies to allow the server to access 
                 // the session
                 xfbml: true, // parse social plugins on this page
