@@ -11,22 +11,6 @@ $(function() {
         videoMsgs: {},
         recordRTC_Video: null,
         recordRTC_Audio: null,
-        play_video: function(video_id) {
-            var source = document.createElement("source");
-            var vid = rwm.videoMsgs[video_id];
-            source.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
-            source.type = "video/webm";
-            $("#video").empty();
-            $("#video").append(source);
-            $("#video").get(0).play();
-
-            var source = document.createElement("source");
-            source.src = URL.createObjectURL(base64_to_blob(vid.audioBlob));
-            source.type = "audio/ogg";
-            $("#audio").empty();
-            $("#audio").append(source);
-            $("#audio").get(0).play();
-        },
         getVideo: function(linkID){
             fb_data.child(linkID).once("value", function(snapshot){
                 this.videoMsgs[linkID] = snapshot.val();
@@ -44,10 +28,28 @@ $(function() {
                             rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
                                 rwm.videoMsgs[msg.linkID] = snapshot.val();
                             });
-                            Tipped.create(elem.get(), {inline: 'video_overlay'});
-                            elem.click(function(){
-                                rwm.play_video(msg.linkID);
-                            })
+                            Tipped.create(elem.get(), function(){
+                                var clone = $('<div id="video_overlay">\
+                                    <video id="video" width="320" height="230" controls>\
+                                    <source id="videosource" type="video/webm"></video>\
+                                    <audio id="audio"><source id="audiosource" type="audio/ogg"></audio></div>'); 
+                                var vid_elem = clone.children().eq(0);
+                                var aud_elem = clone.children().eq(1);
+                                var vid_src = vid_elem.children().get(0);
+                                var aud_src = aud_elem.children().get(0);
+                                
+                                var vid = rwm.videoMsgs[msg.linkID];
+                                vid_src.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
+
+                                aud_src.src = URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                                
+                                elem.click(function(){
+                                    vid_elem.get(0).play();
+                                    aud_elem.get(0).play();
+                                })
+
+                                return clone;
+                            });
                         } else if(msg.type === "text"){
                             Tipped.create(elem.get(), msg.text);
                         }
