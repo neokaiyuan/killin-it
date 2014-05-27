@@ -199,16 +199,10 @@ nav ul li img {
 #feedback {
   position: absolute;
   display: inline-block;
-  border: 1px solid;
-  border-color: black;
+  opacity: 0.3;
 }
 
-.display p {
-  visibility: hidden;
-}
-
-.display:hover p {
-  visibility: visible;
-  color: white;
-  margin: 10px;
+.display {
+  opacity: 0.3;
+  z-index: 99;
 }

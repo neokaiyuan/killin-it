@@ -37,7 +37,7 @@ $(function() {
             FB.api('/'+msg.userID+'/picture', function(response){
                     if (!response.error) {
                         var elem = $('<li><div><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
-                            .attr('id', msgID)
+                            .attr('id', "response"+msgID)
                             .addClass('videoHead');
                         //Assign appropriate click handlers/UI
                         if(msg.type === "video"){
@@ -52,48 +52,54 @@ $(function() {
                             Tipped.create(elem.get(), msg.text);
                         }
                         
-                        $("#"+threadID).append(elem);
+                        $("#thread"+threadID).append(elem);
                     } else {
                         console.log("Could not get FB pic");
                     }
             });
 
         },
-        renderAnnotations: function(){
-            for(x in this.pageThreads){
-                var elem = $('<div/>').addClass('thread').append(
-                    $('<ul id = ' + x + '> </ul>'))
-                    .css({
-                    "top": this.pageThreads[x].position.y1,
-                    "position": "absolute"
-                    });
-                $("#playback_bar").append(elem);
-            }
-            for(x in this.pageThreads){
-                var msgs = this.pageThreads[x].messages;
-                for(y in msgs){
-                    this.renderMsg(x, y);
-                }
-                var elem = $("<img class='addreply' src='/img/plus.png'></img>");
-                $("#"+x).append(elem);
-            }
-            
-        },
+       
         reloadAnnotations: function(){
             this.fb_main.child(this.bookID).child(this.pageNum).once('value', function(snapshot){
                 rwm.pageThreads = snapshot.val();         
                 $("#playback_bar").empty();
-                rwm.renderAnnotations();
                 rwm.reloadHighlight();
             }); 
+        },
+
+        renderSingleThread: function(threadID){
+            $("#playback_bar").empty();
+            var elem = $('<div/>').addClass('thread').append(
+                $('<ul id = ' + "thread" + threadID + '> </ul>'))
+                .css({
+                    "top": this.pageThreads[threadID].position.y1,
+                    "position": "absolute"
+                });
+                $("#playback_bar").append(elem);
+            var msgs = this.pageThreads[threadID].messages;
+            for(x in msgs){
+                this.renderMsg(threadID, x);
+            }
+            var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+                $("#"+"thread"+threadID).append(elem);
+            $("#pdfdiv").click(function(e){
+                $("#playback_bar").empty();
+            });
+
         },
         reloadHighlight: function(){
             $(".display").remove();
             for(thread in this.pageThreads) {
                 var position = this.pageThreads[thread].position;
-                var annot_display = new DisplayTag("pdfdiv", position.x1, position.y1, position.height, position.width);
-
+                var annot_display = new DisplayTag("pdfdiv", thread, position.x1, position.y1, position.height, position.width);
+                console.log(thread);
             }
+            $(".display").click(function(e){
+                console.log(e.target);
+                e.stopPropagation();
+                rwm.renderSingleThread(e.target.id);
+            });
         },
         record_audio_and_video: function() {
             this.recordRTC_Video.startRecording();
@@ -196,22 +202,27 @@ $(function() {
         },
 
 
-        goPrevious: function() {
+        goPrevious: function() { 
             if (rwm.pageNum <= 1)
                 return;
             rwm.pageNum--;
             rwm.renderPage(rwm.pageNum);
             rwm.reloadAnnotations();
             window.scrollTo(0, 0);
+            $("#feedback").width = 0;
+            $("#feedback").height = 0;
         },
 
         goNext: function() {
+           
             if (rwm.pageNum >= rwm.pdfDoc.numPages)
                 return;
             rwm.pageNum++;
             rwm.renderPage(rwm.pageNum);
             rwm.reloadAnnotations();
             window.scrollTo(0, 0)
+            $("#feedback").width = 0;
+            $("#feedback").height = 0;
         },
 
         renderPage: function(num) {
