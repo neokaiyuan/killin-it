@@ -29,7 +29,7 @@ $(function() {
                         rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
                             rwm.videoMsgs[msg.linkID] = snapshot.val();
                         });
-                        Tipped.create(elem.find(".msg-icon", function(){
+                        Tipped.create(elem.find(".msg-icon"), function(){
                             var clone = $('<div id="video_overlay">\
                                 <video id="video" width="320" height="230" controls>\
                                 <source id="videosource" type="video/webm"></video>\
@@ -50,8 +50,8 @@ $(function() {
                             });
 
                             return clone;
-                        }));
-                    } else if(msg.type === "text") {
+                        });
+                    } else if (msg.type === "text") {
                         Tipped.create(elem.find(".msg-icon"), msg.text);
                     }
 
@@ -328,7 +328,6 @@ $(function() {
                 rwm.renderPage(rwm.pageNum);
             });
         },
-
 
         goPrevious: function() { 
             if (rwm.pageNum <= 1)
