@@ -62,12 +62,10 @@ $(function() {
                             if (confirm("Are you should you want to remove this message?")) {
 
                                 var fb_thread = rwm.fb_main.child(rwm.bookID).child(rwm.pageNum).child(threadID);
-                                console.log(fb_thread);
                                 fb_thread.child("messages").once("value", function(snapshot) {
                                     var messageCount = snapshot.numChildren();
                                     if (snapshot.child(msgID).child("type").val() == "video") {
                                         var linkID = snapshot.child(msgID).child("linkID").val();
-                                        console.log("linkID: " + linkID);
                                         rwm.fb_data.child(linkID).remove();    
                                     }
                                     if (messageCount <= 1) {
