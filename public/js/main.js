@@ -20,15 +20,32 @@ $(function() {
             var msg = this.pageThreads[threadID].messages[msgID];
             FB.api('/'+msg.userID+'/picture', function(response){
                     if (!response.error) {
-                        var elem = $('<li><div><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                        var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
                             .attr('id', "response"+msgID)
                             .addClass('videoHead');
+
+                        var delete_button = $('<img class="msg-icon delete_button" src="/img/delete_button.png"></img>')
+                        delete_button.click(function() {
+                            if (confirm("Are you should you want to remove this message?")) {
+
+                                /* TODO: 
+                                need to find the fb instance and remove it 
+                                only if userID is the same
+                                //this.fb_main.child(this.bookID).child(this.pageNum).child(threadID).child(msgID).remove()
+                                restructure to distinguish between head and msg elements. perhaps just have all be elements and no head?
+                                */
+
+                                msg.remove();
+                            }
+                        });
+                        elem.find(".msg-icon-div").append(delete_button);
+
                         //Assign appropriate click handlers/UI
-                        if(msg.type === "video"){
+                        if (msg.type === "video") {
                             rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
                                 rwm.videoMsgs[msg.linkID] = snapshot.val();
                             });
-                            Tipped.create(elem.get(), function(){
+                            Tipped.create(elem.find(".msg-icon", function(){
                                 var clone = $('<div id="video_overlay">\
                                     <video id="video" width="320" height="230" controls>\
                                     <source id="videosource" type="video/webm"></video>\
@@ -46,12 +63,12 @@ $(function() {
                                 elem.click(function(){
                                     vid_elem.get(0).play();
                                     aud_elem.get(0).play();
-                                })
+                                });
 
                                 return clone;
                             });
-                        } else if(msg.type === "text"){
-                            Tipped.create(elem.get(), msg.text);
+                        } else if(msg.type === "text") {
+                            Tipped.create(elem.find(".msg-icon"), msg.text);
                         }
                         
                         $("#thread"+threadID).append(elem);
@@ -253,7 +270,6 @@ $(function() {
             });
         },
         bindUIActions: function() {
-
             $("#modal").click(function() {
                 FB.login(rwm.ensureLoggedIn, {
                     scope: 'public_profile,email,user_friends'
