@@ -206,3 +206,15 @@ nav ul li img {
   opacity: 0.3;
   z-index: 99;
 }
+
+#recording{
+    position: fixed;
+    right: 30px;
+    top: 90px;
+    display: none;
+}
+
+#recording img{
+    padding: 0px 3px;
+    width: 12px;
+}

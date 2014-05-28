@@ -203,6 +203,7 @@ $(function() {
             });
         },
         record_audio_and_video: function() {
+            $("#recording").show();
             this.recordRTC_Video.startRecording();
             this.recordRTC_Audio.startRecording();
         },
@@ -231,6 +232,7 @@ $(function() {
             this.append_msg_to_thread(threadID, stuff_to_upload_fbmain);
         },
         stop_recording_and_upload_response:function(threadID) {
+            $("#recording").hide();
             var stuff_to_upload_fbdata = {};
             var stuff_to_upload_fbmain = {
                 type: 'video',
