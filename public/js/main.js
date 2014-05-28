@@ -315,7 +315,6 @@ $(function() {
         },
 
         goNext: function() {
-           
             if (rwm.pageNum >= rwm.pdfDoc.numPages)
                 return;
             rwm.pageNum++;
@@ -327,9 +326,9 @@ $(function() {
         },
 
         renderPage: function(num) {
-            var scale = 1.3,
-                canvas = document.getElementById('pdfarea'),
-                ctx = canvas.getContext('2d');
+            var scale = 1.5,
+            canvas = document.getElementById('pdfarea'),
+            ctx = canvas.getContext('2d');
             this.pdfDoc.getPage(num).then(function(page) {
                 var viewport = page.getViewport(scale);
                 canvas.height = viewport.height;
