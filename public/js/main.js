@@ -18,63 +18,71 @@ $(function() {
         },
         renderMsg: function(threadID, msgID){
             var msg = this.pageThreads[threadID].messages[msgID];
-            FB.api('/'+msg.userID+'/picture', function(response){
-                    if (!response.error) {
-                        var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
-                            .attr('id', "response"+msgID)
-                            .addClass('videoHead');
+            FB.api('/'+msg.userID+'/picture', function(response) {
+                if (!response.error) {
+                    var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                        .attr('id', "response"+msgID)
+                        .addClass('videoHead');
 
+                    //Assign appropriate click handlers/UI
+                    if (msg.type === "video") {
+                        rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
+                            rwm.videoMsgs[msg.linkID] = snapshot.val();
+                        });
+                        Tipped.create(elem.find(".msg-icon", function(){
+                            var clone = $('<div id="video_overlay">\
+                                <video id="video" width="320" height="230" controls>\
+                                <source id="videosource" type="video/webm"></video>\
+                                <audio id="audio"><source id="audiosource" type="audio/ogg"></audio></div>'); 
+                            var vid_elem = clone.children().eq(0);
+                            var aud_elem = clone.children().eq(1);
+                            var vid_src = vid_elem.children().get(0);
+                            var aud_src = aud_elem.children().get(0);
+                            
+                            var vid = rwm.videoMsgs[msg.linkID];
+                            vid_src.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
+
+                            aud_src.src = URL.createObjectURL(base64_to_blob(vid.audioBlob));
+                            
+                            elem.click(function(){
+                                vid_elem.get(0).play();
+                                aud_elem.get(0).play();
+                            });
+
+                            return clone;
+                        }));
+                    } else if(msg.type === "text") {
+                        Tipped.create(elem.find(".msg-icon"), msg.text);
+                    }
+
+                    // delete button for messages
+                    if (msg.userID == rwm.me.id) {
                         var delete_button = $('<img class="msg-icon delete_button" src="/img/delete_button.png"></img>')
                         delete_button.click(function() {
                             if (confirm("Are you should you want to remove this message?")) {
 
-                                /* TODO: 
-                                need to find the fb instance and remove it 
-                                only if userID is the same
-                                //this.fb_main.child(this.bookID).child(this.pageNum).child(threadID).child(msgID).remove()
-                                restructure to distinguish between head and msg elements. perhaps just have all be elements and no head?
-                                */
-
-                                msg.remove();
+                                var fb_thread = rwm.fb_main.child(rwm.bookID).child(rwm.pageNum).child(threadID);
+                                fb_thread.child("messages").once("value", function(snapshot) {
+                                    var messageCount = snapshot.numChildren();
+                                    var linkID = snapshot.child(msgID).child("linkID").val();
+                                    rwm.fb_data.child(linkID).remove();
+                                    if (messageCount <= 1) {
+                                        fb_thread.remove();
+                                        console.log("thread removed");
+                                    } else {
+                                        fb_thread.child("messages").child(msgID).remove();
+                                        console.log("message removed");        
+                                    }
+                                });
                             }
                         });
                         elem.find(".msg-icon-div").append(delete_button);
-
-                        //Assign appropriate click handlers/UI
-                        if (msg.type === "video") {
-                            rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
-                                rwm.videoMsgs[msg.linkID] = snapshot.val();
-                            });
-                            Tipped.create(elem.find(".msg-icon", function(){
-                                var clone = $('<div id="video_overlay">\
-                                    <video id="video" width="320" height="230" controls>\
-                                    <source id="videosource" type="video/webm"></video>\
-                                    <audio id="audio"><source id="audiosource" type="audio/ogg"></audio></div>'); 
-                                var vid_elem = clone.children().eq(0);
-                                var aud_elem = clone.children().eq(1);
-                                var vid_src = vid_elem.children().get(0);
-                                var aud_src = aud_elem.children().get(0);
-                                
-                                var vid = rwm.videoMsgs[msg.linkID];
-                                vid_src.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
-
-                                aud_src.src = URL.createObjectURL(base64_to_blob(vid.audioBlob));
-                                
-                                elem.click(function(){
-                                    vid_elem.get(0).play();
-                                    aud_elem.get(0).play();
-                                });
-
-                                return clone;
-                            });
-                        } else if(msg.type === "text") {
-                            Tipped.create(elem.find(".msg-icon"), msg.text);
-                        }
-                        
-                        $("#thread"+threadID).append(elem);
-                    } else {
-                        console.log("Could not get FB pic");
                     }
+
+                    $("#thread"+threadID).append(elem);
+                } else {
+                    console.log("Could not get FB pic");
+                }
             });
 
         },
@@ -211,7 +219,6 @@ $(function() {
             for(thread in this.pageThreads) {
                 var position = this.pageThreads[thread].position;
                 var annot_display = new DisplayTag("pdfdiv", thread, position.x1, position.y1, position.height, position.width);
-                console.log(thread);
             }
             $(".display").click(function(e){
                 console.log(e.target);
@@ -362,23 +369,21 @@ $(function() {
             });
             document.getElementById('page_num').textContent = rwm.pageNum;
             document.getElementById('page_count').textContent = rwm.pdfDoc.numPages;
-            console.log(canvas.height);
         },
         initFacebook: function() {
             window.fbAsyncInit = function() {
                 FB.init({
                     appId: '532658660179459', // this is Kai test appID
                     // appId: '529110353867623', this is the herokuapp appId
-                cookie: true, // enable cookies to allow the server to access 
-                // the session
-                xfbml: true, // parse social plugins on this page
-                version: 'v2.0' // use version 2.0
+                    cookie: true, // enable cookies to allow the server to access 
+                    // the session
+                    xfbml: true, // parse social plugins on this page
+                    version: 'v2.0' // use version 2.0
                 });
                 FB.getLoginStatus(function(response) {
                     rwm.ensureLoggedIn(response);
                 });
             };
-
 
             (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];
