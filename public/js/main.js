@@ -62,16 +62,20 @@ $(function() {
                             if (confirm("Are you should you want to remove this message?")) {
 
                                 var fb_thread = rwm.fb_main.child(rwm.bookID).child(rwm.pageNum).child(threadID);
+                                console.log(fb_thread);
                                 fb_thread.child("messages").once("value", function(snapshot) {
                                     var messageCount = snapshot.numChildren();
-                                    var linkID = snapshot.child(msgID).child("linkID").val();
-                                    rwm.fb_data.child(linkID).remove();
+                                    if (snapshot.child(msgID).child("type").val() == "video") {
+                                        var linkID = snapshot.child(msgID).child("linkID").val();
+                                        console.log("linkID: " + linkID);
+                                        rwm.fb_data.child(linkID).remove();    
+                                    }
                                     if (messageCount <= 1) {
                                         fb_thread.remove();
                                         console.log("thread removed");
                                     } else {
                                         fb_thread.child("messages").child(msgID).remove();
-                                        console.log("message removed");        
+                                        console.log("message removed");
                                     }
                                 });
                             }
@@ -373,8 +377,8 @@ $(function() {
         initFacebook: function() {
             window.fbAsyncInit = function() {
                 FB.init({
-                    // appId: '532658660179459', // this is Kai test appID
-                    appId: '529110353867623', // this is the herokuapp appId
+                    appId: '532658660179459', // this is Kai test appID
+                    //appId: '529110353867623', // this is the herokuapp appId
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
