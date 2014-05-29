@@ -39,6 +39,14 @@ $(function() {
                             var vid_src = vid_elem.children().get(0);
                             var aud_src = aud_elem.children().get(0);
                             
+                            vid_elem.bind("play", function(){
+                                aud_elem.get(0).play();
+                            });
+
+                            vid_elem.bind("pause", function(){
+                                aud_elem.get(0).pause();
+                            });
+
                             var vid = rwm.videoMsgs[msg.linkID];
                             vid_src.src = URL.createObjectURL(base64_to_blob(vid.videoBlob));
 
@@ -376,6 +384,7 @@ $(function() {
                 FB.init({
                     //appId: '532658660179459', // this is Kai test appID
                     appId: '529110353867623', // this is the herokuapp appId
+                    // appId: '532144570230868', // this is the roshan's test appId
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
