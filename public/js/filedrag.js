@@ -49,7 +49,7 @@ Developed by Craig Buckler (@craigbuckler) of OptimalWorks.net
                     window.location.href = "http://read-with-me.herokuapp.com/book/"+ shortid;
                 },
                 onError: function(status) {
-                    $('#status').html('Upload error: ' + status);
+                    $('#status').html('Upload error: ' + status + ". Please try again.");
                 }
             });
 
