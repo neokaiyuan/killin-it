@@ -16,7 +16,7 @@ ul {
 ul li {
   list-style-type: none;
   display: block;
-  float: left;
+  /* float: left; */
 }
 
 ul:hover li{
@@ -93,7 +93,7 @@ background-color: #DDDDDD;
 }
 img.addreply{
     width: 20px;
-    padding: 15px 5px;
+    padding: 15px 15px;
 }
 
 .msg-icon-div {
@@ -102,6 +102,13 @@ img.addreply{
 
 .msg-icon {
     border-radius: 80px;
+}
+
+.msg-head-overlay{
+    position: absolute;
+    left: 0px;
+    width: 32px;
+    padding: 8px;
 }
 
 .delete_button {
@@ -180,7 +187,7 @@ header h1 {
 }
 
 header img {
-    width: 32px;
+    width: 28px;
     float:left;
 }
 

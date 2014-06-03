@@ -20,12 +20,12 @@ $(function() {
             var msg = this.pageThreads[threadID].messages[msgID];
             FB.api('/'+msg.userID+'/picture', function(response) {
                 if (!response.error) {
-                    var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"></img></div></li>')
+                    var elem = $('<li><div class="msg-icon-div"><img class="msg-icon" src="' + response.data.url + '"><img class="msg-head-overlay"> </img></img></div></li>')
                         .attr('id', "response"+msgID)
                         .addClass('videoHead');
-
                     //Assign appropriate click handlers/UI
                     if (msg.type === "video") {
+                        // elem.find('.msg-head-overlay').attr("src", "/img/film.png")
                         rwm.fb_data.child(msg.linkID).once("value", function(snapshot){
                             rwm.videoMsgs[msg.linkID] = snapshot.val();
                         });
@@ -58,9 +58,10 @@ $(function() {
                             });
 
                             return clone;
-                        });
+                        },{ position: 'right' });
                     } else if (msg.type === "text") {
-                        Tipped.create(elem.find(".msg-icon"), msg.text);
+                        // elem.find('.msg-head-overlay').attr("src", "/img/text.png")
+                        Tipped.create(elem.find(".msg-icon"), msg.text, {position: 'right', showOn: 'load'});
                     }
 
                     // delete button for messages
@@ -165,10 +166,11 @@ $(function() {
 
         renderSingleThread: function(threadID){
             $("#playback_bar").empty();
+            $('.tpd-tooltip').remove();
             var elem = $('<div/>').addClass('thread').append(
                 $('<ul id = ' + "thread" + threadID + '> </ul>'))
                 .css({
-                    "top": this.pageThreads[threadID].position.y1,
+                    // "top": this.pageThreads[threadID].position.y1,
                     "position": "absolute"
                 });
                 $("#playback_bar").append(elem);
@@ -176,7 +178,7 @@ $(function() {
             for(x in msgs){
                 this.renderMsg(threadID, x);
             }
-                var elem = $("<img class='addreply' src='/img/plus.png'></img>");
+                var elem = $("<li class='videoHead'><img class='addreply' src='/img/plus.png'></img></li>");
                 (function(x){
                         Tipped.create(elem.get(),function(){
                             var threadID = x; 
@@ -346,6 +348,7 @@ $(function() {
             window.scrollTo(0, 0);
             $("#feedback").width = 0;
             $("#feedback").height = 0;
+            $('.tpd-tooltip').remove();
         },
 
         goNext: function() {
@@ -357,6 +360,7 @@ $(function() {
             window.scrollTo(0, 0)
             $("#feedback").width = 0;
             $("#feedback").height = 0;
+            $('.tpd-tooltip').remove();
         },
 
         renderPage: function(num) {
@@ -383,8 +387,8 @@ $(function() {
             window.fbAsyncInit = function() {
                 FB.init({
                     //appId: '532658660179459', // this is Kai test appID
-                    appId: '529110353867623', // this is the herokuapp appId
-                    // appId: '532144570230868', // this is the roshan's test appId
+                    // appId: '529110353867623', // this is the herokuapp appId
+                    appId: '532144570230868', // this is the roshan's test appId
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
