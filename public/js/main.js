@@ -418,8 +418,8 @@ $(function() {
             window.fbAsyncInit = function() {
                 FB.init({
                     //appId: '532658660179459', // this is Kai test appID
-                    // appId: '529110353867623', // this is the herokuapp appId
-                    appId: '532144570230868', // this is the roshan's test appId
+                    appId: '529110353867623', // this is the herokuapp appId
+                    // appId: '532144570230868', // this is the roshan's test appId
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
