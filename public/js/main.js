@@ -69,7 +69,7 @@ $(function() {
                     if (msg.userID == rwm.me.id) {
                         var delete_button = $('<img class="msg-icon delete_button" src="/img/delete_button.png"></img>')
                         delete_button.click(function() {
-                            if (confirm("Are you should you want to remove this message?")) {
+                            if (confirm("Are you sure you want to delete this message?")) {
 
                                 var fb_thread = rwm.fb_main.child(rwm.bookID).child(rwm.pageNum).child(threadID);
                                 fb_thread.child("messages").once("value", function(snapshot) {
