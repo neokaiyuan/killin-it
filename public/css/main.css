@@ -77,15 +77,27 @@ background-color: #DDDDDD;
 }
 
 #webcam_stream {
+    background: black;
     position: fixed;
     right: 20px;
     top: 80px;
+    border-radius: 5px;
     display: none;
   padding: 0;
 }
 
 #webcam_stream video {
-  border: 2px solid #dcc;
+  /* border: 2px solid #dcc; */
+    padding: 10px 0px 0px 0px;
+}
+
+#stream-toolbar{
+    margin: 0 auto;
+    width: 32px;
+}
+
+#stp_btn{
+display: none;
 }
 
 .videoHead{
@@ -229,14 +241,14 @@ nav ul li img {
   z-index: 99;
 }
 
-#recording{
+#recording-indicator{
     position: fixed;
     right: 30px;
     top: 90px;
     display: none;
 }
 
-#recording img{
+#recording-indicator img{
     padding: 0px 3px;
     width: 12px;
 }

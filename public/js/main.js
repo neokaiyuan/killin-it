@@ -11,6 +11,8 @@ $(function() {
         videoMsgs: {},
         recordRTC_Video: null,
         recordRTC_Audio: null,
+        isVideoStandby: false,
+        isRecording: false,
         getVideo: function(linkID){
             fb_data.child(linkID).once("value", function(snapshot){
                 this.videoMsgs[linkID] = snapshot.val();
@@ -96,6 +98,7 @@ $(function() {
             });
 
         },
+        //Not using this function right now.
         renderAnnotations: function(){
             for(x in this.pageThreads){
                 var elem = $('<div/>').addClass('thread').append(
@@ -115,38 +118,38 @@ $(function() {
                 (function(x){
                         Tipped.create(elem.get(),function(){
                             var threadID = x; 
-                            console.log(threadID);
                             var clone = $('<div id="toolbar">\
                                 <div id="recordVideo"><img src="/img/video.png" alt="" /></div>\
                                 <div id="recordText"><img src="/img/bubble.png" alt="" /></div>\
                                 <div></div></div>');
                             var vid_btn = clone.children().eq(0);
                             var txt_btn = clone.children().eq(1);
-                            console.log(txt_btn);
-                            console.log(vid_btn);
-                            vid_btn.mouseup(function(e){
-                                var threadID = x; 
-                                console.log(threadID);
-                                rwm.stop_recording_and_upload_response(threadID);
-                            });
+                            // vid_btn.mouseup(function(e){
+                            //     var threadID = x; 
+                            //     console.log(threadID);
+                            //     rwm.stop_recording_and_upload_response(threadID);
+                            // });
 
                             txt_btn.click(function(e){
                                 var threadID = x; 
-                                console.log(threadID);
                                 rwm.get_text_message_and_upload(threadID);
                             });
     
-                            vid_btn.mousedown(function(e){
-                                rwm.record_audio_and_video();
-                            });
-                            vid_btn.mouseenter(function(e){
-                                $("#webcam_stream").show(); 
-                            });
-                            vid_btn.mouseleave(function(e){
-                                $("#webcam_stream").hide(); 
+                            // vid_btn.mousedown(function(e){
+                            //     rwm.record_audio_and_video();
+                            // });
+                            // vid_btn.mouseenter(function(e){
+                            //     $("#webcam_stream").show(); 
+                            // });
+                            // vid_btn.mouseleave(function(e){
+                            //     $("#webcam_stream").hide(); 
+                            // });
+                            
+                            vid_btn.click(function(e){
+                                $('#webcam_stream').show();
                             });
 
-                            Tipped.create(clone.children().first().get(), "Click and hold to record video");
+                            // Tipped.create(clone.children().first().get(), "Click and hold to record video");
                             return clone;
                         });
                 })(x);
@@ -180,38 +183,39 @@ $(function() {
                 (function(x){
                         Tipped.create(elem.get(),function(){
                             var threadID = x; 
-                            console.log(threadID);
                             var clone = $('<div id="toolbar">\
                                 <div id="recordVideo"><img src="/img/video.png" alt="" /></div>\
                                 <div id="recordText"><img src="/img/bubble.png" alt="" /></div>\
                                 <div></div></div>');
                             var vid_btn = clone.children().eq(0);
                             var txt_btn = clone.children().eq(1);
-                            console.log(txt_btn);
-                            console.log(vid_btn);
-                            vid_btn.mouseup(function(e){
-                                var threadID = x; 
-                                console.log(threadID);
-                                rwm.stop_recording_and_upload_response(threadID);
-                            });
 
                             txt_btn.click(function(e){
                                 var threadID = x; 
-                                console.log(threadID);
                                 rwm.get_text_message_and_upload(threadID);
                             });
     
-                            vid_btn.mousedown(function(e){
-                                rwm.record_audio_and_video();
-                            });
-                            vid_btn.mouseenter(function(e){
-                                $("#webcam_stream").show(); 
-                            });
-                            vid_btn.mouseleave(function(e){
-                                $("#webcam_stream").hide(); 
+                            vid_btn.click(function(e){
+                                $('#rec_btn').unbind('click');
+                                $('#stp_btn').unbind('click');
+                                rwm.isVideoStandby = true;
+                                $('#webcam_stream').show();
+                                $('#rec_btn').click(function(e){
+                                    rwm.record_audio_and_video();
+                                    $("#rec_btn").hide()
+                                    $('#stp_btn').show();
+                                });
+                                
+                                $('#stp_btn').click(function(e){
+                                    var threadID = x; 
+                                    rwm.stop_recording_and_upload_response(threadID);
+                                    $('#stp_btn').hide()
+                                    $('#rec_btn').show();
+                                    $('#webcam_stream').hide();
+                                    rwm.setDefaultRecordBehavior();
+                                });
                             });
 
-                            Tipped.create(clone.children().first().get(), "Click and hold to record video");
                             return clone;
                         });
                 })(threadID);
@@ -237,7 +241,8 @@ $(function() {
             });
         },
         record_audio_and_video: function() {
-            $("#recording").show();
+            $("#recording-indicator").show();
+            rwm.isRecording = true;
             this.recordRTC_Video.startRecording();
             this.recordRTC_Audio.startRecording();
         },
@@ -266,7 +271,9 @@ $(function() {
             this.append_msg_to_thread(threadID, stuff_to_upload_fbmain);
         },
         stop_recording_and_upload_response:function(threadID) {
-            $("#recording").hide();
+                console.log(threadID);
+            $("#recording-indicator").hide();
+            rwm.isRecording = false;
             var stuff_to_upload_fbdata = {};
             var stuff_to_upload_fbmain = {
                 type: 'video',
@@ -286,26 +293,31 @@ $(function() {
                 });
             });
         },
-        bindUIActions: function() {
-            $("#modal").click(function() {
-                FB.login(rwm.ensureLoggedIn, {
-                    scope: 'public_profile,email,user_friends'
-                });
-            });
+        setDefaultRecordBehavior: function(){
+            $('#rec_btn').unbind('click');
+            $('#stp_btn').unbind('click');
+            $('#recordVideo').unbind('click');
+            $('#recordText').unbind('click');
+            // $("#recordVideo").mousedown(function(e){
+            //     rwm.record_audio_and_video();
+            // });
 
-            var annotation = new Tagger("pdfdiv", "feedback");
+            // $("#recordVideo").mouseup(function(e){
+            //     $("#feedback").width = 0;
+            //     $("#feedback").height = 0;
+            //     var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
+            //     rwm.stop_recording_and_upload_response(threadID);
+            // });
+            // 
+            // $("#recordVideo").mouseenter(function(e){
+            //     $("#webcam_stream").show(); 
+            // });
 
-            $("#recordVideo").mousedown(function(e){
-                rwm.record_audio_and_video();
-            });
-
-            $("#recordVideo").mouseup(function(e){
-                $("#feedback").width = 0;
-                $("#feedback").height = 0;
-                var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
-                rwm.stop_recording_and_upload_response(threadID);
-
-            });
+            // $("#recordVideo").mouseleave(function(e){
+            //     $("#webcam_stream").hide(); 
+            // });
+            // Tipped.create("#recordVideo", "Click and hold to record video");
+            
 
             $("#recordText").click(function(e){
                 $("#feedback").width = 0;
@@ -314,16 +326,39 @@ $(function() {
                 rwm.get_text_message_and_upload(threadID);
             });
 
-            $("#recordVideo").mouseenter(function(e){
-                $("#webcam_stream").show(); 
-            });
+            $('#recordVideo').click(function(e){
+                $('#webcam_stream').show();
+                rwm.isVideoStandby = true;
+                $('#rec_btn').click(function(e){
+                    rwm.record_audio_and_video();
+                    $("#rec_btn").hide()
+                    $('#stp_btn').show();
+                });
 
-            $("#recordVideo").mouseleave(function(e){
-                $("#webcam_stream").hide(); 
+                $('#stp_btn').click(function(e){
+                $("#feedback").width = 0;
+                $("#feedback").height = 0;
+                var threadID = rwm.createThread(annotation.x_coord, annotation.y_coord, annotation.height, annotation.width);
+                rwm.stop_recording_and_upload_response(threadID);
+                    $('#stp_btn').hide()
+                    $('#rec_btn').show();
+                $('#webcam_stream').hide();
+                });
             });
-
+        },
+        bindUIActions: function() {
+            $("#modal").click(function() {
+                FB.login(rwm.ensureLoggedIn, {
+                    scope: 'public_profile,email,user_friends'
+                });
+            });
+            
+            annotation = new Tagger("pdfdiv", "feedback");
+            rwm.setDefaultRecordBehavior();
+            $("#pdfdiv").click(function(){
+                rwm.setDefaultRecordBehavior();
+            })
             Tipped.create('#pdfdiv', {inline: "toolbar", showOn: 'click', behavior: 'sticky', hideOn: {element: 'click', tooltip: 'click'}});
-            Tipped.create("#recordVideo", "Click and hold to record video");
             document.getElementById('prevPage').addEventListener('click', rwm.goPrevious);
             document.getElementById('nextPage').addEventListener('click', rwm.goNext);
         },
@@ -383,8 +418,8 @@ $(function() {
             window.fbAsyncInit = function() {
                 FB.init({
                     //appId: '532658660179459', // this is Kai test appID
-                    appId: '529110353867623', // this is the herokuapp appId
-                    // appId: '532144570230868', // this is the roshan's test appId
+                    // appId: '529110353867623', // this is the herokuapp appId
+                    appId: '532144570230868', // this is the roshan's test appId
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
@@ -463,8 +498,8 @@ $(function() {
                       height: video_height,
                       src: URL.createObjectURL(mediaStream)
                 });
-                webcam_stream.appendChild(video);
-
+                // webcam_stream.appendChild(video);
+                $(webcam_stream).prepend(video);
 
             }, function(failure) {
                 console.log(failure);
