@@ -80,7 +80,7 @@ background-color: #DDDDDD;
     background: black;
     position: fixed;
     right: 20px;
-    top: 80px;
+    bottom: 20px;
     border-radius: 5px;
     display: none;
   padding: 0;
@@ -125,8 +125,10 @@ img.addreply{
 }
 
 .msg-text{
-    width: 250px;
+    min-width: 200px;
+    width: 30%;
     min-height: 40px;
+    max-height: 100px;
     font-family: Helvetica;
     font-size: 13px;
     color: #DDDDDD;
@@ -134,10 +136,12 @@ img.addreply{
     padding: 5px;
     border-radius: 5px;
     margin: 0px 5px;
-    float: right;
+    float: left;
+    overflow: auto;
 }
 .msg-icon {
     border-radius: 80px;
+    float: left;
 }
 
 .delete_button {
