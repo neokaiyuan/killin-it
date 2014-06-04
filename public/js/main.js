@@ -263,12 +263,14 @@ $(function() {
         },
         get_text_message_and_upload: function(threadID){
             var res = prompt("Please enter comment:");
-            var stuff_to_upload_fbmain = {
-                type: 'text',
-                text: res,
-                userID: rwm.me.id
+            if(res != null && res != ""){
+                var stuff_to_upload_fbmain = {
+                    type: 'text',
+                    text: res,
+                    userID: rwm.me.id
+                }
+                this.append_msg_to_thread(threadID, stuff_to_upload_fbmain);
             }
-            this.append_msg_to_thread(threadID, stuff_to_upload_fbmain);
         },
         stop_recording_and_upload_response:function(threadID) {
                 console.log(threadID);
