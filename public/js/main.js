@@ -63,7 +63,8 @@ $(function() {
                         });
                         elem.find(".msg-icon-div").append($("<img id='play_overlay' src='/img/video_black.png'></img>"));
                     } else if (msg.type === "text") {
-                        Tipped.create(elem.find(".msg-icon"), msg.text);
+                        // Tipped.create(elem.find(".msg-icon"), msg.text);
+                        elem.find(".msg-icon-div").append($("<p class='msg-text'>"+msg.text+"</p>"));
                     }
 
                     // delete button for messages
@@ -170,11 +171,11 @@ $(function() {
         renderSingleThread: function(threadID){
             $("#playback_bar").empty();
             var elem = $('<div/>').addClass('thread').append(
-                $('<ul id = ' + "thread" + threadID + '> </ul>'))
-                .css({
-                    "top": this.pageThreads[threadID].position.y1,
-                    "position": "absolute"
-                });
+                $('<ul id = ' + "thread" + threadID + '> </ul>'));
+                // .css({
+                    // "top": this.pageThreads[threadID].position.y1,
+                    // "position": "absolute"
+                // });
                 $("#playback_bar").append(elem);
             var msgs = this.pageThreads[threadID].messages;
             for(x in msgs){
@@ -220,8 +221,9 @@ $(function() {
                             return clone;
                         });
                 })(threadID);
-
-                $("#thread"+threadID).append(elem);
+                setTimeout(function(){
+                    $("#thread"+threadID).append(elem);
+                }, 300);
             // var elem = $("<img class='addreply' src='/img/plus.png'></img>");
             //     $("#"+"thread"+threadID).append(elem);
             $("#pdfdiv").click(function(e){

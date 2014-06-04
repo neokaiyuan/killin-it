@@ -16,7 +16,7 @@ ul {
 ul li {
   list-style-type: none;
   display: block;
-  float: left;
+  /* float: left; */
 }
 
 ul:hover li{
@@ -103,15 +103,39 @@ display: none;
 .videoHead{
     /* position: absolute; */
 }
+
+.thread{
+    padding: 10px 0px;
+    position: fixed;
+    overflow: auto;
+}
 img.addreply{
     width: 20px;
-    padding: 15px 5px;
+    padding: 12px;
+    margin: 2px;
+
 }
 
 .msg-icon-div {
+    min-width: 320px;
   position: relative;
+  overflow: auto;
+  width: 100%;
+  padding: 10px 0px;
 }
 
+.msg-text{
+    width: 250px;
+    min-height: 40px;
+    font-family: Helvetica;
+    font-size: 13px;
+    color: #DDDDDD;
+    background: #444444;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 0px 5px;
+    float: right;
+}
 .msg-icon {
     border-radius: 80px;
 }
@@ -120,8 +144,8 @@ img.addreply{
   height: 25px;
   width: 25px;
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: 0px;
+  left: 30px;
   opacity: 0.0;
   z-index: 1000;
 }
@@ -262,7 +286,7 @@ nav ul li img {
     left: 0px;
     top: 0px;
     width: 25px;
-    padding: 40px 15px;
+    padding: 40px 15px 0px 15px;
     pointer-events:none;
     opacity: 0.7;
 }
