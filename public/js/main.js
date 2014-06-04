@@ -61,6 +61,7 @@ $(function() {
 
                             return clone;
                         });
+                        elem.find(".msg-icon-div").append($("<img id='play_overlay' src='/img/video_black.png'></img>"));
                     } else if (msg.type === "text") {
                         Tipped.create(elem.find(".msg-icon"), msg.text);
                     }
